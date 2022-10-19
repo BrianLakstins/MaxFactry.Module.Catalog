@@ -1,0 +1,65 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxDiscountCodeViewModel
+
+<div>@ViewBag.Message</div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+    
+        if (!String.IsNullOrEmpty(Model.Id))
+        {
+        <fieldset>
+            @Html.HiddenFor(m => m.Id)
+            <legend>Edit Discount Code</legend>
+            @Html.DisplayFor(m => m.Id, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.Description, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.TextAreaFor(m => m.Description, new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.InternalNote, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.TextAreaFor(m => m.InternalNote, new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.Calculation, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.Calculation, new SelectList(Model.CalculationList, "Key", "Value", Model.Calculation), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.ReferType, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.ReferType, new SelectList(Model.ReferTypeList, "Key", "Value", Model.ReferType), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.Group, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.AmountOff, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.PercentOff, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.Code, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.StartDate, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.EndDate, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.CategoryIdListText, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.ProductIdListText, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.ProductSkuListText, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.UserIdListText, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.UsernameListText, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.MinimumAmount, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.MaximumAmount, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.MinimumQuantity, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.MaximumQuanitity, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.UseCount, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.UsedCount, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.IsFreeShipping, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+            @Html.EditorFor(m => m.IsUseAlways, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+            @Html.EditorFor(m => m.Active, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="input-group">
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDelete" onclick="return (confirm('are you sure?'));" class="btn btn-danger">Delete</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDone" class="btn btn-default">Done</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessSave" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</fieldset>        
+        }
+
+    }
+
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+
+}

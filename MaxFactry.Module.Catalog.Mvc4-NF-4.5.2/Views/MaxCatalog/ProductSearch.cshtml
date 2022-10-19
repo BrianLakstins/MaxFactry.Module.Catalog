@@ -1,0 +1,64 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxProductViewModel
+
+@using (Html.BeginForm("ProductSearch", "MaxCatalog", FormMethod.Get, new Dictionary<string, object> { { "role", "form" }, { "class", "form-inline" } }))
+{
+    <fieldset>
+        <legend>Search Product</legend>
+        <div class="form-group">
+            <label class="sr-only" for="s">Search</label>
+            <input type="text" name="s" id="SearchText" class="form-control" placeholder="Search Text" value="@Request.Form["s"]" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Search" class="btn btn-primary" />
+        </div>
+
+    </fieldset>
+}
+
+@{
+
+    List<IHtmlString> loList = new List<IHtmlString>();
+    var loResultList = Model.GetSearchList();
+    for (int lnP = 0; lnP < loResultList.Count && lnP < 21; lnP++)
+    {
+        var loModel = loResultList[lnP];
+        if (loModel.IsActive || User.IsInRole("Admin - App"))
+        {
+            string lsProductNameLink = Html.ActionLink(loModel.Name, "Product", "MaxCatalog", routeValues: new { id = loModel.Id }, htmlAttributes: new { Class = "ussProductInCategoryLink" }).ToString();
+            string lsImage = string.Empty;
+            if (!Guid.Empty.Equals(loModel.PrimaryImageId))
+            {
+                var loImage = new MaxFactry.Module.Catalog.PresentationLayer.MaxProductImageViewModel(loModel.PrimaryImageId);
+                lsImage = "<a href='" + Url.Action("Product", "MaxCatalog", routeValues: new { id = loModel.Id }) + "'><img class='ussProductListImage' src='" + loImage.ContentUrl + "' /></a>";
+            }
+
+
+            string lsR = "<div class='ussProductListImageContainer'>" + lsImage + "</div><div class='ussProductSkuContainer'>SKU: " + loModel.Sku + "</div><div class='ussProductNameLinkContainer'>" + lsProductNameLink + "</div><div class='ussProductPriceContainer'>Price: " + string.Format("{0:C}", loModel.PriceBase) + "</div>";
+            if (!loModel.IsActive)
+            {
+                lsR += "<div class='bg-warning'>Inactive</div>";
+            }
+            
+            loList.Add(MvcHtmlString.Create(lsR));
+        }
+    }
+
+
+}
+@Html.MaxGrid(loList, 3)
+
+<style>
+    .ussProductListImage {
+        width: 100px;
+    }
+
+    .ussProductListImageContainer {
+        border: 1px solid black;
+        float: left;
+        margin-bottom: 3px;
+    }
+
+    .ussProductInCategoryLink {
+        text-decoration: none;
+    }
+</style>

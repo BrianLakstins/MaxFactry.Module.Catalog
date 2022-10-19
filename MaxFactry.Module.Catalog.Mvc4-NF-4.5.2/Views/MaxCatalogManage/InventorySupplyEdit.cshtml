@@ -1,0 +1,132 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxInventorySupplyViewModel
+
+<div>@ViewBag.Message</div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+    
+        if (!String.IsNullOrEmpty(Model.Id))
+        {
+        <fieldset>
+            @Html.HiddenFor(m => m.Id)
+            <legend>Edit Supply Inventory</legend>
+            @Html.DisplayFor(m => m.Id, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.DisplayFor(m => m.AmountCurrent, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.DisplayFor(m => m.AmountReplenish, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.DisplayFor(m => m.AmountOnOrder, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.SupplySku, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.SiteId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.SiteId, new SelectList(Model.SiteList, "Id", "Name", Model.SiteId), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.Location, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.ReplenishAlertLevel, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.LeadTime, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.UnitOfMeasure, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.UnitOfMeasure, new SelectList(Model.UnitOfMeasureList, "Key", "Value", Model.UnitOfMeasure), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.VendorId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.VendorId, new SelectList(Model.VendorList, "Id", "Name", Model.VendorId), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.VendorSku, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.ManufacturerId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.ManufacturerId, new SelectList(Model.ManufacturerList, "Id", "Name", Model.ManufacturerId), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.ManufacturerSku, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.IsBackOrderAllowed, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+            @Html.EditorFor(m => m.Active, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="input-group">
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDelete" onclick="return (confirm('are you sure?'));" class="btn btn-danger">Delete</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDone" class="btn btn-default">Done</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessSave" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</fieldset>        
+        }
+
+    }
+
+
+@using (Html.BeginForm("InventorySupplyChange", "MaxCatalogManage", FormMethod.Post, new Dictionary<string, object> { { "role", "form" }, { "class", "form-horizontal" } }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <fieldset>
+        <legend>Add Amounts</legend>
+        @Html.HiddenFor(m => m.Id)
+        <div class="form-group">
+            <label for="uoAmountCurrent" class="control-label col-md-2">Current Amount</label>
+            <div class="input-group">
+                <div class="col-md-10">
+                    <input type="number" name="uoAmountCurrent" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="uoAmountReplenish" class="control-label col-md-2">Incoming Amount</label>
+            <div class="input-group">
+                <div class="col-md-10">
+                    <input type="number" name="uoAmountReplenish" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="uoReason" class="control-label col-md-2">Reason</label>
+            <div class="input-group">
+                <div class="col-md-10">
+                    <input type="text" name="uoReason" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCreate" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (null != ViewBag.LogInfo)
+        {
+            <pre>@Html.Raw(ViewBag.LogInfo)</pre>
+        }
+        @if (Model.LogList.Count > 0)
+        {
+            <table class="table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Change</th>
+                        <th>Start</th>
+                        <th>End</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var loModel in Model.LogList)
+                    {
+                        <tr>
+                            <td>
+                                @Html.ActionLink("Details", "InventoryLogDisplay", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+
+                            </td>
+                            <td>@loModel.AmountChanged</td>
+                            <td>@loModel.AmountStart</td>
+                            <td>@loModel.AmountEnd</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </fieldset>
+}
+
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+
+}

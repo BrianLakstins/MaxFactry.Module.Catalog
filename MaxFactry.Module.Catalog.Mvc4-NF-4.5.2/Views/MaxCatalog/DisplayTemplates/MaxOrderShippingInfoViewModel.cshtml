@@ -1,0 +1,19 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderShippingInfoViewModel
+
+@if (Model.IsPickup)
+{
+    @Html.DisplayFor(m => m.PickupDate, additionalViewData: new { LabelColumnWidth = 4, TimeValue = Model.PickupTime })
+}
+else
+{
+    @Html.DisplayFor(m => m.ShippingAddress, additionalViewData: new { LabelColumnWidth = 4 })
+}
+@if (!string.IsNullOrEmpty(Model.Notes))
+{
+    <div class="row">
+        <label class="col-sm-2 control-label">Notes</label>
+        <div class="col-sm-5 col-md-5 col-lg-4">
+            <p class="form-control-static" id="@Html.MaxIdFor(m => m.Notes)">@Model.Notes</p>
+        </div>
+    </div>
+}

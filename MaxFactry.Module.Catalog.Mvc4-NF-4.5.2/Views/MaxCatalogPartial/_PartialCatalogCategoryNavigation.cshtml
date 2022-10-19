@@ -1,0 +1,39 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxCategoryViewModel
+
+@{
+    var loList = Model.GetSortedList();
+    var loIndex = new MaxFactry.Core.MaxIndex();
+    foreach (var loModel in loList)
+    {
+        if (loModel.IsActive && loModel.Catalog.IsActive)
+        { 
+            loIndex.Add(loModel);
+        }
+    }
+
+    foreach (var loModel in loList)
+{
+        if (loModel.IsActive && loModel.Catalog.IsActive)
+        { 
+    if (loModel.ParentId == null)
+    {
+        var loChildList = loModel.GetChildList(loIndex);
+        if (loChildList.Count > 0)
+        {
+             <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">@loModel.Name <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                @foreach (var loChild in loChildList)
+                {
+            <li>@Html.ActionLink(loChild.Name, "Category", "MaxCatalog", routeValues: new { id = loChild.Id }, htmlAttributes: new { Class = "ussCategoryNavigationLink" })</li>
+                }
+                        </ul>
+                    </li>
+        }
+        else
+        {
+            <li>@Html.ActionLink(loModel.Name, "Category", "MaxCatalog", routeValues: new { id = loModel.Id }, htmlAttributes: new { Class = "ussCategoryNavigationLink" })</li>
+        }
+    }
+    }
+}
+}

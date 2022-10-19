@@ -1,0 +1,11 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderShippingAddressViewModel
+
+@Html.HiddenFor(m => m.Id)
+<address itemscope itemtype="http://schema.org/Organization">
+    <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <div itemprop="name">@Model.Company</div>
+        <div itemprop="alternateName">@Model.Attention</div>
+        <div itemprop="streetAddress">@Model.DeliveryAddress</div>
+        <span itemprop="addressLocality">@Model.City</span>, <span itemprop="addressRegion">@Model.StateCode</span> <span itemprop="postalCode">@Model.PostalCode</span><br />
+    </div>
+</address>

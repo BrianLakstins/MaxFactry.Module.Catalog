@@ -1,0 +1,61 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxManufacturerViewModel
+
+<h1>Manufacturer Management</h1>
+<div>@ViewBag.Message</div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+        <fieldset>
+            <legend>Create Manufacturer</legend>
+            @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.Active, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="input-group">
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCreate" class="btn btn-primary">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </fieldset>        
+    }
+
+@{
+    var loList = Model.GetSortedList();
+    if (loList.Count > 0)
+    {
+    <table class="table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Name</th>
+                <th>Is Active?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loView in loList)
+            {
+                <tr>
+                    <td>@Html.ActionLink("Edit", "ManufacturerEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loView.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })</td>
+                    <td>@loView.Name</td>
+                    <td>@loView.Active</td>
+                </tr>
+            }
+        </tbody>
+    </table>    
+}
+}
+
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+
+}

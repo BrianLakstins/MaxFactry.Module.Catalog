@@ -1,0 +1,10 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderContactPersonViewModel
+@Html.HiddenFor(m => m.Id)
+          
+<address itemscope itemtype="http://schema.org/Person">
+    <div itemprop="name">@Model.CurrentFirstName @Model.CurrentLastName</div>
+    Phone: <span itemprop="telephone"><a class="tel" href="tel:+@Model.Phone">@Model.Phone</a></span><br />
+    Email: <span itemprop="email"><a class="email" href="email:+@Model.Email">@Model.Email</a></span><br />
+    Email Signup?: <span>@Model.EmailSignup</span><br />
+    Note: <span>@Model.Note</span><br />
+</address>

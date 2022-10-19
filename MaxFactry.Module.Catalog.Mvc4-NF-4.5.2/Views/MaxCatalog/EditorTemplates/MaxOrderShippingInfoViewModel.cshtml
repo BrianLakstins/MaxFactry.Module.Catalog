@@ -1,0 +1,41 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderShippingInfoViewModel
+
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.ShippingType)
+@if (Model.IsPickup)
+{
+    <div class="row">
+        <div class="col-sm-offset-4 col-sm-8">Normal pickup times are 8:00 AM - 5:00 PM weekdays.  Add a note to make other special arrangements.</div>
+    </div>
+
+    @Html.EditorFor(m => m.PickupDate, additionalViewData: new { LabelColumnWidth = 4, TimeControl = Html.TextBoxFor(m => m.PickupTime, new { Class = "form-control", Placeholder = "Approximate Time" }) })
+}
+else if (Model.ShippingType == MaxFactry.Module.Catalog.BusinessLayer.MaxShippingTypeEntity.ShippingTypeSpecial)
+{
+    if (null != MaxFactry.Core.MaxConfigurationLibrary.GetValue(MaxFactry.Core.MaxEnumGroup.Scope23, "ShippingTypeSpecialNote"))
+    {
+    <div class="row">
+        <div class="col-sm-offset-4 col-sm-8">@MaxFactry.Core.MaxConfigurationLibrary.GetValue(MaxFactry.Core.MaxEnumGroup.Scope23, "ShippingTypeSpecialNote")</div>
+    </div>
+    }
+    else
+    {
+    <div class="row">
+        <div class="col-sm-offset-4 col-sm-8">Special Shipping</div>
+    </div>
+    }
+}
+else
+{
+    @Html.EditorFor(m => m.ShippingAddress, additionalViewData: new { LabelColumnWidth = 4 })
+}
+<div class="row">
+    <label class="col-sm-2 control-label hidden-xs">Notes</label>
+    <div class="col-sm-9 form-group @Html.MaxErrorClassFor(m => m.Notes)">
+        @Html.TextAreaFor(m => m.Notes, 3, 60, htmlAttributes: new { Class = "form-control" })
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.Notes))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>

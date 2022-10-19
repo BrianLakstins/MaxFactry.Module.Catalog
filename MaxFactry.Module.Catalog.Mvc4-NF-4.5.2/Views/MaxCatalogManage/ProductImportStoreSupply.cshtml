@@ -1,0 +1,154 @@
+﻿@model MaxFactry.Module.Catalog.Mvc4.PresentationLayer.MaxProductImportStoreSupplyViewModel
+
+<h1>Store Supply Product Import</h1>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <fieldset>
+        <legend>Step 1: Download Data from storesupply.com.</legend>
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-sm-2">Download Data</label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="DownloadData" class="btn btn-primary">Update data from http://www.storesupply.com/sitemap.xml</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Step 2: Update product creation rules.</legend>
+
+        @Html.EditorFor(m => m.CatalogIdText, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.CatalogIdText, new SelectList(Model.CatalogList, "Id", "Name", Model.CatalogIdText), new Dictionary<string, object> { { "class", "form-control" } }) })
+        @Html.EditorFor(m => m.VendorIdText, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.VendorIdText, new SelectList(Model.VendorList, "Id", "Name", Model.VendorIdText), new Dictionary<string, object> { { "class", "form-control" } }) })
+
+        <div class="row">
+            <div class="form-group">
+                @Html.LabelFor(m => m.ProductCreateRuleList, htmlAttributes: new { Class = "control-label col-md-2" })
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <table class="ussOptionByNameTable">
+                            <tr><th>Name</th><th>Key</th><th>Rule Type</th><th>Process Order</th><th>Rule Data</th></tr>
+                            @for (int lnP = 0; lnP < Model.ProductCreateRuleList.Count; lnP++)
+                            {
+                                @Html.HiddenFor(m => m.ProductCreateRuleList[lnP].Id)
+                                <tr>
+                                    <td>@Html.TextBoxFor(m => m.ProductCreateRuleList[lnP].Name, htmlAttributes: new { Class = "form-control", type = "text" })</td>
+                                    <td>@Html.TextBoxFor(m => m.ProductCreateRuleList[lnP].Key, htmlAttributes: new { Class = "form-control", type = "text" })</td>
+                                    <td>@Html.DropDownListFor(m => m.ProductCreateRuleList[lnP].RuleType, new SelectList(Model.ProductCreateRuleTypeList, "Num", "Name", Model.ProductCreateRuleList[lnP].RuleType), htmlAttributes: new { Class = "form-control" })</td>
+                                    <td>@Html.TextBoxFor(m => m.ProductCreateRuleList[lnP].ProcessOrder, htmlAttributes: new { Class = "form-control", type = "number" })</td>
+                                    <td>@Html.TextBoxFor(m => m.ProductCreateRuleList[lnP].RuleData1, htmlAttributes: new { Class = "form-control", type = "text" })</td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                    <span class="help-block"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-sm-2">Action</label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="SaveProductCreationRules" class="btn btn-primary">Save Product Creation Rules</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Step 3: Create/Update imported products.</legend>
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-md-2">Action</label>
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="Import" class="btn btn-primary">Import products for Store Supply catalog</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Step 4: Update product branching rules.</legend>
+        @Html.EditorFor(m => m.ShopCatalogIdText, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.ShopCatalogIdText, new SelectList(Model.CatalogList, "Id", "Name", Model.ShopCatalogIdText), new Dictionary<string, object> { { "class", "form-control" } }) })
+        <div class="row">
+            <label class="control-label col-sm-2">Category Map</label>
+        </div>
+        @for (int lnP = 0; lnP < Model.CategoryMapRuleList.Count; lnP++)
+        {
+            @Html.HiddenFor(m => m.CategoryMapRuleList[lnP].Id)
+            @Html.HiddenFor(m => m.CategoryMapRuleList[lnP].RuleType)
+            @Html.HiddenFor(m => m.CategoryMapRuleList[lnP].Key)
+            @Html.HiddenFor(m => m.CategoryMapRuleList[lnP].Name)
+            @Html.HiddenFor(m => m.CategoryMapRuleList[lnP].OriginalValues["RuleData1"])
+            <div class="row">
+                <div class="col-sm-12">
+                    <a target="_blank" href="/MaxCatalog/Category/@Model.CategoryMapRuleList[lnP].Key">@Model.CategoryMapRuleList[lnP].Name</a>
+                    <div>
+                        @Html.TextBoxFor(m => m.CategoryMapRuleList[lnP].RuleData1, htmlAttributes: new { Class = "form-control", type = "text" })
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="form-group">
+                @Html.LabelFor(m => m.ProductCopyRuleList, htmlAttributes: new { Class = "control-label col-md-2" })
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <table class="ussOptionByNameTable">
+                            <tr><th>Name</th><th>Key</th><th>Rule Type</th><th>Process Order</th><th>Rule Data</th></tr>
+                            @for (int lnP = 0; lnP < Model.ProductCopyRuleList.Count; lnP++)
+                            {
+                                @Html.HiddenFor(m => m.ProductCopyRuleList[lnP].Id)
+                                <tr>
+                                    <td>@Html.TextBoxFor(m => m.ProductCopyRuleList[lnP].Name, htmlAttributes: new { Class = "form-control", type = "text" })</td>
+                                    <td>@Html.TextBoxFor(m => m.ProductCopyRuleList[lnP].Key, htmlAttributes: new { Class = "form-control", type = "text" })</td>
+                                    <td>@Html.DropDownListFor(m => m.ProductCopyRuleList[lnP].RuleType, new SelectList(Model.ProductCopyRuleTypeList, "Num", "Name", Model.ProductCopyRuleList[lnP].RuleType), htmlAttributes: new { Class = "form-control" })</td>
+                                    <td>@Html.TextBoxFor(m => m.ProductCopyRuleList[lnP].ProcessOrder, htmlAttributes: new { Class = "form-control", type = "number" })</td>
+                                    <td>@Html.TextBoxFor(m => m.ProductCopyRuleList[lnP].RuleData1, htmlAttributes: new { Class = "form-control", type = "text" })</td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                    <span class="help-block"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-sm-2">Action</label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="SaveBranchRules" class="btn btn-primary">Save Product Branching Rules</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Step 5: Create/Update product branches.</legend>
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-sm-2">Action</label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="CreateBranch" class="btn btn-primary">Branch Imported Products</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </fieldset>
+
+
+
+}
+<code>
+    @Html.Raw(ViewBag.Output)
+</code>

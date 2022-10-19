@@ -1,0 +1,48 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxInventoryProductViewModel
+
+<div>@ViewBag.Message</div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+    
+        if (!String.IsNullOrEmpty(Model.Id))
+        {
+        <fieldset>
+            @Html.HiddenFor(m => m.Id)
+            <legend>Edit Product Inventory</legend>
+            @Html.DisplayFor(m => m.Id, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.DisplayFor(m => m.AmountAvailable, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.DisplayFor(m => m.AmountOnOrder, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.ProductSku, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.SupplySkuList, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.TextAreaFor(m => m.SupplySkuList, new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.ReplenishAlertLevel, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.UnitOfMeasure, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.UnitOfMeasure, new SelectList(Model.UnitOfMeasureList, "Key", "Value", Model.UnitOfMeasure), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.Active, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="input-group">
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDelete" onclick="return (confirm('are you sure?'));" class="btn btn-danger">Delete</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDone" class="btn btn-default">Done</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessSave" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</fieldset>        
+        }
+
+    }
+
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+
+}

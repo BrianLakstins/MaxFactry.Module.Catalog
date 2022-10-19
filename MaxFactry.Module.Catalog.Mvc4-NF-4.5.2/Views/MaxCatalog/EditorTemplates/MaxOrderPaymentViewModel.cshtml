@@ -1,0 +1,137 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderPaymentViewModel
+
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.PaymentDetailType)
+@if (null != Model.PaymentDetailId)
+{
+    @Html.HiddenFor(m => m.PaymentDetailId)
+}
+
+@if (Model.OrderPaymentDetail.DetailType == MaxFactry.Module.Catalog.BusinessLayer.MaxOrderPaymentDetailEntity.PaymentDetailTypeCard)
+{
+    <div class="row">
+        <label class="col-sm-2 control-label">Name</label>
+        <div class="col-sm-6 col-md-5 col-lg-5 form-group @Html.MaxErrorClassFor(m => m.OrderPaymentDetail.CardName)">
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.OrderPaymentDetail.CardName, htmlAttributes: new { Class = "form-control", placeholder = "Name on the card." })
+                @Html.MaxToolTip("Required", "asterisk")
+            </div>
+            @foreach (var loError in Html.MaxGetErrorListFor(m => m.OrderPaymentDetail.CardName))
+            {
+                <span class="help-block">@loError.ErrorMessage</span>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <label class="col-sm-2 control-label">Number</label>
+        <div class="col-sm-5 col-md-4 col-lg-4 form-group @Html.MaxErrorClassFor(m => m.OrderPaymentDetail.CardNumber)">
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.OrderPaymentDetail.CardNumber, htmlAttributes: new { Class = "form-control", placeholder = "Number on the card." })
+                @Html.MaxToolTip("Required", "asterisk")
+            </div>
+            @foreach (var loError in Html.MaxGetErrorListFor(m => m.OrderPaymentDetail.CardNumber))
+            {
+                <span class="help-block">@loError.ErrorMessage</span>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <label class="col-sm-2 control-label">Expire</label>
+        <div class="col-sm-4 col-md-3 col-lg-3 form-group @Html.MaxErrorClassFor(m => m.OrderPaymentDetail.CardExpireMonth)">
+            <div class="input-group">
+                <select class="form-control" id="@Html.MaxIdFor(m => m.OrderPaymentDetail.CardExpireMonth)" name="@Html.MaxNameFor(m => m.OrderPaymentDetail.CardExpireMonth)">
+                    <option value="">Month</option>
+                    @for (int lnMonth = 1; lnMonth < 13; lnMonth++)
+                    {
+                        string lsSelected = string.Empty;
+                        if (null != Model.OrderPaymentDetail.CardExpireMonth && Model.OrderPaymentDetail.CardExpireMonth.Equals(lnMonth.ToString()))
+                        {
+                            lsSelected = " selected='selected'";
+                        }
+
+                        <option value="@lnMonth" @lsSelected>@lnMonth.ToString().PadLeft(2, '0') - @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(lnMonth)</option>
+                    }
+                </select>
+                @Html.MaxToolTip("Required", "asterisk")
+            </div>
+            @foreach (var loError in Html.MaxGetErrorListFor(m => m.OrderPaymentDetail.CardExpireMonth))
+            {
+                <span class="help-block">@loError.ErrorMessage</span>
+            }
+        </div>
+
+        <div class="col-sm-3 col-md-2 col-lg-2 form-group @Html.MaxErrorClassFor(m => m.OrderPaymentDetail.CardExpireYear)">
+            <div class="input-group">
+                <select class="form-control" id="@Html.MaxIdFor(m => m.OrderPaymentDetail.CardExpireYear)" name="@Html.MaxNameFor(m => m.OrderPaymentDetail.CardExpireYear)">
+                    <option value="">Year</option>
+                    @for (int lnYear = DateTime.Now.Year; lnYear < DateTime.Now.Year + 20; lnYear++)
+                    {
+                        string lsSelected = string.Empty;
+                        if (null != Model.OrderPaymentDetail.CardExpireYear && Model.OrderPaymentDetail.CardExpireYear.Equals(lnYear.ToString()))
+                        {
+                            lsSelected = " selected='selected'";
+                        }
+
+                        <option value="@lnYear" @lsSelected>@lnYear</option>
+                    }
+                </select>
+                @Html.MaxToolTip("Required", "asterisk")
+            </div>
+            @foreach (var loError in Html.MaxGetErrorListFor(m => m.OrderPaymentDetail.CardExpireYear))
+            {
+                <span class="help-block">@loError.ErrorMessage</span>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <label class="col-sm-2 control-label">Code</label>
+        <div class="col-sm-4 col-md-3 col-lg-3 form-group @Html.MaxErrorClassFor(m => m.OrderPaymentDetail.CardVerification)">
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.OrderPaymentDetail.CardVerification, htmlAttributes: new { Class = "form-control", placeholder = "Code on the card." })
+                @Html.MaxToolTip("Required", "asterisk")
+            </div>
+            @foreach (var loError in Html.MaxGetErrorListFor(m => m.OrderPaymentDetail.CardVerification))
+            {
+                <span class="help-block">@loError.ErrorMessage</span>
+            }
+        </div>
+    </div>
+}
+else if (Model.OrderPaymentDetail.DetailType == MaxFactry.Module.Catalog.BusinessLayer.MaxOrderPaymentDetailEntity.PaymentDetailTypeGeneral)
+{
+    string lsCardNameDefault = MaxFactry.Core.MaxConvertLibrary.ConvertToString(typeof(object), MaxFactry.Core.MaxConfigurationLibrary.GetValue(MaxFactry.Core.MaxEnumGroup.Scope23, "GeneralPaymentCardNameDefault"));
+    if (string.IsNullOrEmpty(Model.OrderPaymentDetail.CardName) && !string.IsNullOrEmpty(lsCardNameDefault))
+    {
+        Model.OrderPaymentDetail.CardName = lsCardNameDefault;
+    }
+
+    string lsCodeDefault = MaxFactry.Core.MaxConvertLibrary.ConvertToString(typeof(object), MaxFactry.Core.MaxConfigurationLibrary.GetValue(MaxFactry.Core.MaxEnumGroup.Scope23, "GeneralPaymentCodeDefault"));
+    if (string.IsNullOrEmpty(Model.OrderPaymentDetail.Code) && !string.IsNullOrEmpty(lsCodeDefault))
+    {
+        Model.OrderPaymentDetail.Code = lsCodeDefault;
+    }
+
+    @Html.EditorFor(m => m.OrderPaymentDetail.CardName, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Type" })
+    @Html.EditorFor(m => m.OrderPaymentDetail.Code, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Reference Number" })
+}
+
+@if (User.IsInRole("Admin - App") || User.IsInRole("Admin"))
+{
+    <div class="row">
+        <label class="col-sm-2 control-label">Amount</label>
+        <div class="col-sm-4 col-md-3 col-lg-3 form-group @Html.MaxErrorClassFor(m => m.CurrentAmount)">
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.CurrentAmount, htmlAttributes: new { Class = "form-control text-right", placeholder = "Partial payment amount." })
+                <br />Leave blank if making full payment
+            </div>
+            @foreach (var loError in Html.MaxGetErrorListFor(m => m.OrderPaymentDetail.CardVerification))
+            {
+                <span class="help-block">@loError.ErrorMessage</span>
+            }
+        </div>
+    </div>
+}
+
+

@@ -1,0 +1,41 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderContactPersonViewModel
+@{
+    bool lbShowEmailSignup = false;
+    string lsStorageKey = MaxFactry.Base.DataLayer.MaxDataLibrary.GetStorageKey(null);
+    if (lsStorageKey == "037a5df8-9d2c-4d9b-ac57-b3a27490a794")
+    {
+        lbShowEmailSignup = true;
+    }
+}
+<div class="row">
+    <label class="col-sm-2 control-label">Name</label>
+    <div class="col-sm-5 col-md-5 col-lg-4">
+        <p class="form-control-static" id="@Html.MaxIdFor(m => m.CurrentFirstName)">@Model.CurrentFirstName @Model.CurrentLastName</p>
+    </div>
+</div>
+<div class="row">
+    <label class="col-sm-2 control-label">Email</label>
+    <div class="col-sm-5 col-md-5 col-lg-4">
+        <p class="form-control-static" id="@Html.MaxIdFor(m => m.Email)">@Model.Email
+        @if (Model.EmailSignup && lbShowEmailSignup)
+        {
+            <span>&nbsp;(Subscribe to newsletter)</span>
+        }
+        </p>
+    </div>
+</div>
+<div class="row">
+    <label class="col-sm-2 control-label">Phone</label>
+    <div class="col-sm-5 col-md-5 col-lg-4">
+        <p class="form-control-static" id="@Html.MaxIdFor(m => m.Phone)">@Model.Phone</p>
+    </div>
+</div>      
+@if (!string.IsNullOrEmpty(Model.Note))
+{
+    <div class="row">
+        <label class="col-sm-2 control-label">Note</label>
+        <div class="col-sm-5 col-md-5 col-lg-4">
+            <p class="form-control-static" id="@Html.MaxIdFor(m => m.Note)">@Model.Note</p>
+        </div>
+    </div>
+}

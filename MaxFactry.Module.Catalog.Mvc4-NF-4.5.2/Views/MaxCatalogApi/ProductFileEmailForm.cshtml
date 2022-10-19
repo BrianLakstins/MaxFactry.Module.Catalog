@@ -1,0 +1,24 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxProductFileViewModel
+
+<form id="udProductFileForm">
+    <input type="hidden" name="uoId" value="@Model.Id" />
+    <div class="ussLogoContainer">
+        <img class="img-responsive" alt="Logo" src="https://efsappplatform.blob.core.windows.net/efswebapp/037a5df8-9d2c-4d9b-ac57-b3a27490a794/MaxCoreAspNetFileUpload/ead842d7-10aa-4d80-9db6-d72cb305e85f_Content" width="284" height="56" style="display: block; font-family: Helvetica, Arial, sans-serif; color: #666666; font-size: 16px;" border="0" />
+    </div>
+    <fieldset>
+        <p>Please enter your email to receive the requested manual in your inbox.</p>
+        <p>File: @Model.Name</p>
+        <div class="form-group">
+            <label for="udEmail">Email</label>
+            <input type="text" name="uoEmail" id="udProductFileEmail" class="form-control" placeholder="user@domain.com" value="@ViewBag.EmailAddress" />
+        </div>
+        <div class="form-group">
+            <div style="float:left">
+                <button type="submit" name="uoProcess" value="sendfile" class="btn btn-primary">Send File</button>
+            </div>
+            <div style="float:right">
+                <button type="button" data-dismiss="modal" name="uoCancel" value="cancel" class="btn btn-default">Cancel</button>
+            </div>
+        </div>
+    </fieldset>
+</form>

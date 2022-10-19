@@ -1,0 +1,247 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel
+@{
+    Layout = Html.MaxGetThemeView("_LayoutEmailSimple");    
+}
+<img class="img-responsive" alt="Logo" src="https:@Html.MaxFileGetUrl("logo-for-email-receipts.png")" width="284" height="56" style="display: block; font-family: Helvetica, Arial, sans-serif; color: #666666; font-size: 16px;" border="0">
+
+<h2>Order @Model.AlternateId</h2>
+@{
+    var lbHasItemDiscount = false;
+    var lnItemColumnWidth = 3;
+    for (int lnCI = 0; lnCI < Model.ItemList.Count; lnCI++)
+    {
+        if (Model.ItemList[lnCI].DiscountAmount > 0)
+        {
+            lbHasItemDiscount = true;
+            lnItemColumnWidth = 4;
+        }
+    }
+}
+
+<table>
+    <tr>
+        <th align="left">Product</th>
+        <th align="right">Price</th>
+        <th align="center">Quantity</th>
+        @if (lbHasItemDiscount)
+        {
+            <th align="right">Discount</th>
+        }
+        <th align="right">Total</th>
+    </tr>
+    @foreach (var loItem in Model.ItemList)
+    {
+        <tr>
+            <td align="left">
+                @loItem.Name
+                <div class="ussDescription">
+                    <div><span class="ussSkuLabel">SKU: </span><span class="ussSku">@loItem.Sku</span></div>
+                    @for (int lnO = 0; lnO < loItem.OptionList.Count; lnO++)
+                {
+                        <div>
+                            <span class="ussOptionLabel">@loItem.OptionList[lnO].Name: </span><span class="ussOption">@loItem.OptionList[lnO].Option</span>
+                        </div>
+                    }
+
+                    @if (loItem.DiscountAmount > 0)
+                {
+                        <div><span class="ussDiscountReason">@loItem.DiscountReason</span></div>
+                    }
+                </div>
+            </td>
+            <td align="right">@string.Format("{0:C}", loItem.ItemPrice)</td>
+            <td align="center">@loItem.Quantity</td>
+            @if (lbHasItemDiscount)
+            {
+                <td align="right">@string.Format("{0:C}", loItem.DiscountAmount)</td>
+            }
+            <td align="right">@string.Format("{0:C}", loItem.ItemTotal)</td>
+        </tr>
+    }
+
+    <tr>
+        <td colspan="@lnItemColumnWidth">
+            @{
+                var lsShipping = Model.ShippingTypeEntity.Name;
+                if (string.IsNullOrEmpty(lsShipping))
+                {
+                    lsShipping = "Shipping";
+                }
+            }
+
+            @lsShipping
+        </td>
+        <td align="right">
+            @if (Model.ShippingTotal >= 0)
+            {
+                <span>@string.Format("{0:C}", Model.ShippingTotal)</span>
+            }
+        </td>
+    </tr>
+
+    @if (null != Model.DiscountTotal)
+    {
+        <tr>
+            <td colspan="@lnItemColumnWidth">Subtotal</td>
+            <td align="right">@Model.SubTotal</td>
+        </tr>
+        <tr>
+            <td colspan="@lnItemColumnWidth">
+                Discount
+                @{
+                    var laList = Model.DiscountTotalExplanation.Split('\n');
+                }
+                <ul>
+                    @foreach (string lsItem in laList)
+                    {
+                        if (!string.IsNullOrEmpty(lsItem.Trim()))
+                        {
+                            <li>@lsItem</li>
+                        }
+                    }
+                </ul>
+            </td>
+            <td align="right">@Model.DiscountTotal</td>
+        </tr>
+                    }
+
+    @if (Model.TaxTotal > 0)
+    {
+        <tr>
+            <td colspan="@lnItemColumnWidth">
+                Taxable Amount
+            </td>
+            <td align="right">@string.Format("{0:C}", Model.TaxableAmount)</td>
+        </tr>
+        <tr>
+            <td colspan="@lnItemColumnWidth">
+                Tax
+            </td>
+            <td align="right">@string.Format("{0:C}", Model.TaxTotal)</td>
+        </tr>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ManualDiscount))
+    {
+        <tr>
+            <td colspan="@lnItemColumnWidth">
+                Manual Credit
+                <p>@Model.ManualDiscountExplanation</p>
+            </td>
+            <td align="right">@string.Format("{0:C}", MaxFactry.Core.MaxConvertLibrary.ConvertToDouble(typeof(object), Model.ManualDiscount))</td>
+        </tr>
+    }
+
+    <tr>
+        <td colspan="@lnItemColumnWidth">
+            Total
+        </td>
+        <td align="right">@string.Format("{0:C}", Model.Total)</td>
+    </tr>
+</table>
+<h2>Contact Information</h2>
+<table>
+    <tr><td>@Model.OrderContactPerson.CurrentFirstName @Model.OrderContactPerson.CurrentLastName</td></tr>
+    <tr><td>@Model.OrderContactPerson.Phone</td></tr>
+    <tr><td>@Model.OrderContactPerson.Email</td></tr>
+    <tr><td>@Model.OrderContactAddress.DeliveryAddress</td></tr>
+    <tr><td>@Model.OrderContactAddress.City, @Model.OrderContactAddress.StateCode @Model.OrderContactAddress.PostalCode</td></tr>
+    @if (!string.IsNullOrEmpty(Model.OrderContactPerson.Note))
+    {
+        <tr><td>Note: @Model.OrderContactPerson.Note</td></tr>
+    }
+</table>
+<h2>Shipping Information</h2>
+<table>
+    @if (Model.OrderShippingInfo.IsPickup)
+    {
+        <tr><td>@Model.OrderShippingInfo.PickupDate at @Model.OrderShippingInfo.PickupTime</td></tr>
+    }
+    else
+    {
+        <tr><td>@Model.OrderShippingInfo.ShippingAddress.Company</td></tr>
+        <tr><td>@Model.OrderShippingInfo.ShippingAddress.Attention</td></tr>
+        <tr><td>@Model.OrderShippingInfo.ShippingAddress.DeliveryAddress</td></tr>
+        <tr><td>@Model.OrderShippingInfo.ShippingAddress.City, @Model.OrderShippingInfo.ShippingAddress.StateCode, @Model.OrderShippingInfo.ShippingAddress.PostalCode</td></tr>
+    }
+    <tr><td>@Model.OrderShippingInfo.Notes</td></tr>
+</table>
+<h2>Payment Information</h2>
+<table>
+    @for (int lnM = 0; lnM < Model.OrderPaymentList.Count; lnM++)
+    {
+        if (Model.OrderPaymentList[lnM].IsSelected == "true" || Model.OrderPaymentList.Count == 1)
+        {
+            if (Model.OrderPaymentList[lnM].OrderPaymentDetail.DetailType == MaxFactry.Module.Catalog.BusinessLayer.MaxOrderPaymentDetailEntity.PaymentDetailTypeCard)
+            {
+                <tr><td>Credit Card</td></tr>
+                <tr><td>@Model.OrderPaymentList[lnM].OrderPaymentDetail.CardName</td></tr>
+                <tr><td>@Model.OrderPaymentList[lnM].OrderPaymentDetail.CardNumberHidden</td></tr>
+                <tr><td>@Model.OrderPaymentList[lnM].OrderPaymentDetail.CardExpireMonth/@Model.OrderPaymentList[lnM].OrderPaymentDetail.CardExpireYear</td></tr>
+                foreach (var loTransaction in Model.OrderPaymentList[lnM].OrderPaymentTransactionList)
+                {
+                    if (loTransaction.IsCollected)
+                    {
+                        <tr><td>@loTransaction.Amount collected upon checkout.</td></tr>
+                    }
+                }
+
+            }
+            else if (Model.OrderPaymentList[lnM].OrderPaymentDetail.DetailType == MaxFactry.Module.Catalog.BusinessLayer.MaxOrderPaymentDetailEntity.PaymentDetailTypeGeneral)
+            {
+                <tr><td>General Payment</td></tr>
+                <tr><td>@Model.OrderPaymentList[lnM].OrderPaymentDetail.CardName</td></tr>
+                <tr><td>@Model.OrderPaymentList[lnM].OrderPaymentDetail.Code</td></tr>
+                foreach (var loTransaction in Model.OrderPaymentList[lnM].OrderPaymentTransactionList)
+                {
+                    if (loTransaction.IsCollected)
+                    {
+                        <tr><td>@loTransaction.Amount collected upon checkout.</td></tr>
+                    }
+                }
+            }
+        }
+    }
+</table>
+@{
+    bool lbHasCustomerNote = false;
+    foreach (var loLog in Model.LogList)
+    {
+        if (loLog.IsCustomerVisible)
+        {
+            lbHasCustomerNote = true;
+        }
+    }
+}
+@if (lbHasCustomerNote)
+{
+    <h2>Notes</h2>
+    <table>
+        <tr>
+            <th align="left">Date</th>
+            <th align="left">Note</th>
+        </tr>
+        @foreach (var loLog in Model.LogList)
+        {
+            if (loLog.IsCustomerVisible)
+            {
+                <tr>
+                    <td align="left">@loLog.LastUpdateDate</td>
+                    <td align="left">
+                        @if (loLog.LogEntry.EndsWith("]"))
+                        {
+                            <span>@loLog.LogEntry.Substring(0, loLog.LogEntry.LastIndexOf("[") - 1)</span>
+                        }
+                        else
+                        {
+                            <span>@loLog.LogEntry</span>
+                        }
+
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+
+}
+<!--Order Management Info-->

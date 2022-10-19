@@ -1,0 +1,22 @@
+﻿<li>@Html.ActionLink("Client", "Client", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udLogClientNavLink" })</li>
+<li>@Html.ActionLink("Catalog", "Catalog", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udCatalogNavLink" })</li>
+<li>@Html.ActionLink("Category", "Category", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udCategoryNavLink" })</li>
+
+
+<li>
+    <a href="/MaxCatalogManage/Product">Product <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+        <li>@Html.ActionLink("Manufacturer", "Manufacturer", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udManufacturerNavLink" })</li>
+        <li>@Html.ActionLink("Vendor", "Vendor", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udVendorNavLink" })</li>
+        <li>@Html.ActionLink("Product Images", "ProductImage", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udProductImageNavLink" })</li>
+        <li>@Html.ActionLink("Product File", "ProductFile", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udProductFileNavLink" })</li>
+        <li>@Html.ActionLink("Import", "ProductImport", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udProductNavLink" })</li>
+        <li>@Html.ActionLink("Inventory Site", "InventorySite", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udInventorySiteNavLink" })</li>
+        <li>@Html.ActionLink("Inventory Supply", "InventorySupply", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udInventorySupplyNavLink" })</li>
+        <li>@Html.ActionLink("Inventory Product", "InventoryProduct", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udInventoryProductNavLink" })</li>
+    </ul>
+</li>
+
+<li>@Html.ActionLink("Order", "Order", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udProductNavLink" })</li>
+<li>@Html.ActionLink("Cart", "Cart", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udCartNavLink" })</li>
+<li>@Html.ActionLink("Discount Code", "DiscountCode", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udDiscountCodeNavLink" })</li>

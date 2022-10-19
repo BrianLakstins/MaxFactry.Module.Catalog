@@ -1,0 +1,72 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxInventorySupplyViewModel
+
+<h1>Supply Inventory Management</h1>
+<div>@ViewBag.Message</div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+        <fieldset>
+            <legend>Create Supply Inventory</legend>
+            @Html.EditorFor(m => m.SupplySku, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.SiteId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.SiteId, new SelectList(Model.SiteList, "Id", "Name", Model.SiteId), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.Location, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.ReplenishAlertLevel, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.LeadTime, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.UnitOfMeasure, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.UnitOfMeasure, new SelectList(Model.UnitOfMeasureList, "Key", "Value", Model.UnitOfMeasure), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.VendorId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.VendorId, new SelectList(Model.VendorList, "Id", "Name", Model.VendorId), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.VendorSku, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.ManufacturerId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.ManufacturerId, new SelectList(Model.ManufacturerList, "Id", "Name", Model.ManufacturerId), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.ManufacturerSku, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.IsBackOrderAllowed, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+            @Html.EditorFor(m => m.Active, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="input-group">
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCreate" class="btn btn-primary">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</fieldset>        
+    }
+
+@{
+    var loList = Model.GetSortedList();
+    if (loList.Count > 0)
+    {
+    <table class="table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Sku</th>
+                <th>Name</th>
+                <th>Is Active?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loView in loList)
+            {
+                <tr>
+                    <td>@Html.ActionLink("Edit", "InventorySupplyEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loView.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })</td>
+                    <td>@loView.SupplySku</td>
+                    <td>@loView.Name</td>
+                    <td>@loView.Active</td>
+                </tr>
+            }
+        </tbody>
+    </table>    
+}
+}
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+
+}

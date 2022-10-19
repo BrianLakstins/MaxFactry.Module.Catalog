@@ -1,0 +1,69 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderPaymentViewModel
+
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.PaymentDetailType)
+@if (null != Model.PaymentDetailId)
+{
+    @Html.HiddenFor(m => m.PaymentDetailId)
+}
+
+@if (Model.OrderPaymentDetail.DetailType == MaxFactry.Module.Catalog.BusinessLayer.MaxOrderPaymentDetailEntity.PaymentDetailTypeCard)
+{
+    <h4>Credit Card Details</h4>
+    <div>@Model.OrderPaymentDetail.CardName</div>
+    <div>@Model.OrderPaymentDetail.CardNumberHidden</div>
+    <div>@(Model.OrderPaymentDetail.CardExpireMonth)/@Model.OrderPaymentDetail.CardExpireYear</div>
+    if (!string.IsNullOrWhiteSpace(Model.OrderPaymentDetail.Note))
+    {
+        <div>@(Model.OrderPaymentDetail.Note)</div>
+    }
+
+}
+else if (Model.OrderPaymentDetail.DetailType == MaxFactry.Module.Catalog.BusinessLayer.MaxOrderPaymentDetailEntity.PaymentDetailTypeGeneral)
+{
+    <h4>General Payment Details</h4>
+    <div>@Model.OrderPaymentDetail.CardName</div>
+    <div>@Model.OrderPaymentDetail.Code</div>
+    if (!string.IsNullOrWhiteSpace(Model.OrderPaymentDetail.Note))
+    {
+        <div>@(Model.OrderPaymentDetail.Note)</div>
+    }
+}
+else
+{
+    <h4>Unknown Payment Details</h4>
+}
+
+<h4>Transactions</h4>
+<div>
+    <table class="table-bordered table-condensed">
+        <thead><tr><th>Date</th><th>Amount</th><th>Type</th><th>Status</th></tr></thead>
+        <tbody>
+            @foreach (var loTransaction in Model.OrderPaymentTransactionList)
+            {
+                <tr>
+                    <td>@loTransaction.DateCollected</td>
+                    <td class="text-right">@loTransaction.Amount</td>
+                    <td>@loTransaction.TransactionType</td>
+                    <td>@loTransaction.Status</td>
+                </tr>
+                if (!string.IsNullOrEmpty(loTransaction.Log))
+                {
+                    <tr>
+                        <td colspan="4">
+                            <pre>@loTransaction.Log</pre>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <fieldset>
+        <legend>Add Sale Transaction</legend>
+        <div class="form-group form-inline">
+            <label class="control-label" for="ud@(Model.Id)Amount">Amount</label>
+            <input type="number" step="any" class="form-control text-right" name="uo@(Model.Id)Amount" id="ud@(Model.Id)Amount" />
+            <button type="submit" name="uoProcess" value="AddTransaction" class="btn btn-success btn-small" onclick="return (confirm('are you sure?'));">Add</button>
+        </div>
+    </fieldset>
+</div>

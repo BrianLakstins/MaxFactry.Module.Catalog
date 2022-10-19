@@ -1,0 +1,84 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxCartViewModel
+
+<h1>Carts updated within last month with items</h1>
+<ul class="list-inline">
+    <li>
+        @Html.ActionLink("Current Cart", "Cart", "MaxCatalog", routeValues: new {  }, htmlAttributes: new { Class = "btn btn-defaut", target = "_blank" })
+    </li>
+    <li>
+        @Html.ActionLink("New Cart", "Cart", "MaxCatalog", routeValues: new { id = "new" }, htmlAttributes: new { Class = "btn btn-success", target = "_blank" })
+    </li>
+</ul>
+
+@{
+    var loList = Model.GetCurrentSortedList();
+
+    if (loList.Count > 0)
+    {
+        <table class="table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th class="text-right">Created Date</th>
+                    <th class="text-right">Last Update Date</th>
+                    <th class="text-right">Item Count</th>
+                    <th class="text-right">Item Total</th>
+                    <th class="text-right">Total</th>
+                    <th>Username</th>
+                    <th class="text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var loModel in loList)
+                {
+                    <tr>
+                        <td style="border-top-width: 2px; color:black;" class="text-right">@loModel.CreatedDate</td>
+                        <td style="border-top-width: 2px; color:black;" class="text-right">@loModel.LastUpdateDate</td>
+                        <td style="border-top-width: 2px; color:black;" class="text-right">@loModel.ItemCount</td>
+                        <td style="border-top-width: 2px; color:black;" class="text-right">@loModel.ItemTotal</td>
+                        <td style="border-top-width: 2px; color:black;" class="text-right">@loModel.Total</td>
+                        <td style="border-top-width: 2px; color:black;">@loModel.Username</td>
+                        <td style="border-top-width: 2px; color:black;" class="text-right"><a class="btn btn-default" target="_blank" href="/MaxCatalog/Cart/@loModel.Id?TakeOver=@loModel.Id">Take Over</a></td>
+                    </tr>
+                    foreach (var loItem in loModel.ItemList)
+                    {
+                        <tr>
+                            <td colspan="7">
+                                <div class="ussName">
+                                    @if (!string.IsNullOrEmpty(loItem.ItemUrl))
+                                    {
+                                        <a href="@loItem.ItemUrl" target="_top">@loItem.Name</a>
+                                    }
+                                    else
+                                    {
+                                        @loItem.Name
+                                    }
+                                </div>
+                                <div class="ussDescription">
+                                    <div><span class="ussSkuLabel">SKU: </span><span class="ussSku">@loItem.Sku</span></div>
+                                    @for (int lnO = 0; lnO < loItem.OptionList.Count; lnO++)
+                                    {
+                                        <div>
+                                            <span class="ussOptionLabel">@loItem.OptionList[lnO].Name: </span><span class="ussOption">@loItem.OptionList[lnO].Option</span>
+                                        </div>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div>No carts match.</div>
+    }
+}
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+}

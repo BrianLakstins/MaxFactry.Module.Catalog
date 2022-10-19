@@ -1,0 +1,178 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxProductViewModel
+
+<h1>Product Management</h1>
+<div class="bg-success">@ViewBag.Message</div>
+@using (Html.BeginForm())
+{
+    <fieldset>
+        <legend>Select Product</legend>
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="form-group">
+                <label class="sr-only" for="SearchText">Search</label>
+                <input type="text" name="SearchText" id="SearchText" class="form-control" placeholder="Search Text" value="@Model.SearchText" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <button type="submit" name="uoProcess" value="Search" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <button type="submit" name="uoProcess" value="UpdateSearch" class="btn btn-primary">Update Search Index</button>
+            </div>
+        </div>
+
+        @{
+    var loList = Model.GetSearchList();
+    if (loList.Count > 0)
+    {
+        <div class="row">
+            <table class="table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <th>Active?</th>
+                        <th>Action</th>
+                        <th>Main Image</th>
+                        <th>SKU</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var loModel in loList)
+                    {
+                        <tr>
+                            <td>@loModel.Active</td>
+                            <td>
+                                @Html.ActionLink("Edit", "ProductEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+                                @Html.ActionLink("View", "Product", "MaxCatalog", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+
+                            </td>
+                            <td>
+                                @{
+                        string lsImage = string.Empty;
+                        if (null != loModel.PrimaryImageId)
+                        {
+                            var loImage = new MaxFactry.Module.Catalog.PresentationLayer.MaxProductImageViewModel(loModel.PrimaryImageId);
+                            lsImage = "<img src='" + loImage.ContentUrl + "' style='max-height:100px; max-width:100px;' />";
+                        }
+                                }
+                                @Html.Raw(lsImage)
+                            </td>
+                            <td>@loModel.Sku</td>
+                            <td>
+                                <strong>@loModel.Name</strong> (@loModel.BranchType)<br />
+                                @if (null != loModel.ParentId)
+                                {
+                                    @Html.ActionLink("Edit Parent", "ProductEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.ParentId } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+                                    @Html.ActionLink("View Parent", "Product", "MaxCatalog", new RouteValueDictionary { { "id", loModel.ParentId } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+                                }
+                                else
+                                {
+                                    @Html.ActionLink("Create Branch", "ProductBranch", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }}
+    </fieldset>
+
+    <fieldset>
+        <legend>Create Product</legend>
+        @Html.EditorFor(m => m.PrimaryCatalogId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.PrimaryCatalogId, new SelectList(Model.CatalogList, "Id", "Name", Model.PrimaryCatalogId), new Dictionary<string, object> { { "class", "form-control" } }) })
+        @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.Sku, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.PriceBase, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.PerText, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.PerQuantity, additionalViewData: new { LabelColumnWidth = 2, InputType = "number" })
+        @Html.EditorFor(m => m.PriceBaseShipping, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.DescriptionShort, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.PrimaryManufacturerId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.PrimaryManufacturerId, new SelectList(Model.ManufacturerList, "Id", "Name", Model.PrimaryManufacturerId), new Dictionary<string, object> { { "class", "form-control" } }) })
+        @Html.EditorFor(m => m.PrimaryManufacturerSku, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.PrimaryVendorId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.PrimaryVendorId, new SelectList(Model.VendorList, "Id", "Name", Model.PrimaryVendorId), new Dictionary<string, object> { { "class", "form-control" } }) })
+        @Html.EditorFor(m => m.PrimaryVendorSku, additionalViewData: new { LabelColumnWidth = 2 })
+
+        @Html.EditorFor(m => m.Description, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.TextAreaFor(m => m.Description, new Dictionary<string, object> { { "class", "form-control" } }) })
+        <div style="border: 1px dashed black; margin-bottom: 10px; padding-top: 5px;">
+            @Html.EditorFor(m => m.DescriptionList, additionalViewData: new { LabelColumnWidth = 2, InputControl = MvcHtmlString.Create("<p class='form-control-static'>Multiple descriptions each with their own title.</p>") })
+            @for (int lnP = 0; lnP < Model.DescriptionList.Count; lnP++)
+            {
+                @Html.EditorFor(m => m.DescriptionList[lnP].Title, additionalViewData: new { LabelColumnWidth = 2 })
+                @Html.EditorFor(m => m.DescriptionList[lnP].Description, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.TextAreaFor(m => m.DescriptionList[lnP].Description, new Dictionary<string, object> { { "class", "form-control" } }) })
+            }
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.PriceByQuantityList, htmlAttributes: new { Class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="input-group">
+                    <table class="ussPriceByQuantityTable">
+                        <tr><th>Start Quantity</th><th>End Quantity</th><th>Price</th></tr>
+                        @for (int lnP = 0; lnP < Model.PriceByQuantityList.Count; lnP++)
+                        {
+                            <tr>
+                                <td>@Html.TextBoxFor(m => m.PriceByQuantityList[lnP].Start, new Dictionary<string, object> { { "type", "number" }, { "class", "form-control" } })</td>
+                                <td>@Html.TextBoxFor(m => m.PriceByQuantityList[lnP].End, new Dictionary<string, object> { { "type", "number" }, { "class", "form-control" } })</td>
+                                <td>@Html.TextBoxFor(m => m.PriceByQuantityList[lnP].Price, new Dictionary<string, object> { { "type", "number" }, { "class", "form-control" } })</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+                <span class="help-block"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.OptionByNameList, htmlAttributes: new { Class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="input-group">
+                    <table class="ussOptionByNameTable">
+                        <tr><th>Option Name</th><th>Option Value</th><th>Display Order</th><th>SKU Suffix</th><th>Additional Price</th><th>Additional Shipping</th></tr>
+                        @for (int lnP = 0; lnP < Model.OptionByNameList.Count; lnP++)
+                        {
+                            <tr>
+                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].Name, new Dictionary<string, object> { { "type", "text" }, { "class", "form-control" } })</td>
+                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].Option, new Dictionary<string, object> { { "type", "text" }, { "class", "form-control" } })</td>
+                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].DisplayOrder, new Dictionary<string, object> { { "type", "number" }, { "class", "form-control" } })</td>
+                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].SkuSuffix, new Dictionary<string, object> { { "type", "text" }, { "class", "form-control" } })</td>
+                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].AdditionalPrice, new Dictionary<string, object> { { "type", "number" }, { "class", "form-control" } })</td>
+                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].AdditionalShipping, new Dictionary<string, object> { { "type", "number" }, { "class", "form-control" } })</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+                <span class="help-block"></span>
+            </div>
+        </div>
+
+
+        @Html.EditorFor(m => m.Active, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCreate" class="btn btn-primary">Create</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </fieldset>
+}
+
+
+
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+
+}

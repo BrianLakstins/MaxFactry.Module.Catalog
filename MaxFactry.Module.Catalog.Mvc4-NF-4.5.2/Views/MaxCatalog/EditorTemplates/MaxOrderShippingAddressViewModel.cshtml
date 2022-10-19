@@ -1,0 +1,127 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderShippingAddressViewModel
+
+@{
+    bool lbShowContact = false;
+    string lsStorageKey = MaxFactry.Base.DataLayer.MaxDataLibrary.GetStorageKey(null);
+    if (lsStorageKey == "037a5df8-9d2c-4d9b-ac57-b3a27490a794")
+    {
+        lbShowContact = true;
+    }
+}
+
+@if (null != Model.Id)
+{
+    @Html.HiddenFor(m => m.Id)
+}
+@if (lbShowContact)
+{ 
+<div class="row">
+    <div class="col-sm-offset-2 col-sm-12">For orders outside of the continental United States, please call <a href="tel:12602253429" tabindex="-1">260-225-3429</a>.</div>
+</div>
+}
+<div class="row">
+    <div class="col-sm-offset-2 col-sm-12"><input type="checkbox" id="udShippingAddressSame" /><label for="udShippingAddressSame">Shipping Address is same as Contact Address</label></div>
+</div>
+
+<div class="row">
+    <label class="col-sm-2 control-label">Company</label>
+    <div class="col-sm-10 form-group @Html.MaxErrorClassFor(m => m.Company)">
+        @Html.TextBoxFor(m => m.Company, htmlAttributes: new { Class = "form-control", placeholder = "Company name." })
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.Company))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <label class="col-sm-2 control-label">Attention</label>
+    <div class="col-sm-10 form-group @Html.MaxErrorClassFor(m => m.Attention)">
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Attention, htmlAttributes: new { Class = "form-control", placeholder = "Person name." })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.Attention))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>
+
+
+<div class="row">
+    <label class="col-sm-2 control-label">Address</label>
+    <div class="col-sm-10 form-group @Html.MaxErrorClassFor(m => m.DeliveryAddress)">
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.DeliveryAddress, htmlAttributes: new { Class = "form-control", placeholder = "Street and extended address information." })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.DeliveryAddress))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <label class="col-sm-2 control-label">City</label>
+    <div class="col-sm-10 form-group @Html.MaxErrorClassFor(m => m.City)">
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.City, htmlAttributes: new { Class = "form-control", placeholder = "City" })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.City))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>
+<div class="row">
+    <label class="col-sm-2 control-label hidden-xs">State/Zip</label>
+    <label class="col-sm-2 control-label visible-xs">State</label>
+    <div class="col-sm-4 form-group @Html.MaxErrorClassFor(m => m.StateCode)">
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.StateCode, new SelectList(Model.GetStateList(), "Value", "Key", Model.StateCode), htmlAttributes: new { Class = "form-control" })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.StateCode))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+    <label class="col-sm-2 control-label visible-xs">Zip Code</label>
+    <div class="col-sm-4 form-group @Html.MaxErrorClassFor(m => m.PostalCode)">
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.PostalCode, htmlAttributes: new { Class = "form-control", placeholder = "Zip Code" })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.PostalCode))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>
+
+<script>
+    $('#udShippingAddressSame').click(function () {
+        pfCopyAddress();
+    });
+
+    function pfCopyAddress()
+    {
+        if ($('#udShippingAddressSame').prop('checked'))
+        {
+            $('#OrderShippingInfo_ShippingAddress_Attention').val($('#OrderContactPerson_CurrentFirstName').val() + ' ' + $('#OrderContactPerson_CurrentLastName').val());
+
+            $('#OrderShippingInfo_ShippingAddress_DeliveryAddress').val($('#OrderContactAddress_DeliveryAddress').val());
+
+            $('#OrderShippingInfo_ShippingAddress_City').val($('#OrderContactAddress_City').val());
+
+            $('#OrderShippingInfo_ShippingAddress_PostalCode').val($('#OrderContactAddress_PostalCode').val());
+
+            $('#OrderShippingInfo_ShippingAddress_StateCode').val($('#OrderContactAddress_StateCode').val());
+        }
+    }
+
+
+</script>

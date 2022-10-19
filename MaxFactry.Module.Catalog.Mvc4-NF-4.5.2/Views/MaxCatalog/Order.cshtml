@@ -1,0 +1,288 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel
+@{
+    Html.MaxIncludeClientTool("Bootstrap");
+}
+@if (User.IsInRole("Admin - App"))
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <p class="bg-info text-center">Logged in as Admin user @User.Identity.Name</p>
+        </div>
+    </div>
+
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <h3 class="text-center">Place Order</h3>
+        <p class="bg-info text-center lead">Please fill out the information below to place your order.</p>
+    </div>
+</div>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <p class="bg-warning text-center lead">There were errors.  Please review and fix them below.</p>
+        </div>
+    </div>
+    <div class="row" style="padding-bottom: 15px">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            @Html.ValidationSummary(false, "There were errors with the order", htmlAttributes: new { Class = "bg-danger" })
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("Order", "MaxCatalog", FormMethod.Post, htmlAttributes: new { Class = "form-horizontal" }))
+{
+    <div class="row">
+        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-9 text-right">&nbsp;</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 text-right"><button type="submit" name="uoProcess" value="EditCart" class="btn btn-success btn-xs">Edit Cart</button></div>
+    </div>
+    <div class="row">
+        @Html.DisplayFor(m => m)
+    </div>
+    <div class="row">
+        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-9 text-right">&nbsp;</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 text-right"><button type="submit" name="uoProcess" value="EditCart" class="btn btn-success btn-xs">Edit Cart</button></div>
+    </div>
+
+    if (User.IsInRole("Admin - App"))
+    {
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <h4>Existing Contacts</h4>
+                <select id="udPersonId" name="uoPersonId" class="form-control"></select>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <button type="submit" name="uoProcess" value="Load" class="btn btn-large">Load</button>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-right pull-right">
+                <button type="button" value="Refresh" class="btn btn-default btn-large" onclick="pfLoadContactPersonList(true)">Refresh</button>
+            </div>
+        </div>
+        <script>
+    function pfLoadContactPersonList(lbReload)
+{
+        $('#udPersonId').empty();
+        $('#udPersonId').append('<option value="">Loading contacts....</option>');
+        $.ajax({
+        type: 'GET',
+            url: "/MaxCatalogApi/contactpersonlist?reload=" + lbReload,
+            success: function (loList) {
+                $('#udPersonId').empty();
+                $('#udPersonId').append('<option value="">Select a contact...</option>');
+                $(loList).each(function (lnP, loContact) {
+                    $('#udPersonId').append('<option value="' + loContact.Id + '">' + loContact.NameForList + "</option>");
+            });
+        },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert(textStatus);
+        },
+            dataType: "json"
+        });
+}
+
+    pfLoadContactPersonList(false);
+        </script>
+    }
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.ProcessingStatus)
+            <fieldset name="uoContactInformation">
+                <legend>Order Contact Information</legend>
+                @Html.EditorFor(m => m.OrderContactPerson)
+                @Html.EditorFor(m => m.OrderContactAddress)
+            </fieldset>
+
+            <fieldset name="uoShippingInformation">
+                <legend>Shipping Information</legend>
+                @Html.EditorFor(m => m.OrderShippingInfo)
+            </fieldset>
+
+            <fieldset name="uoPaymentInformation">
+                <legend>Payment Information</legend>
+                @{ 
+                    string lsPaymentTypeAvailable = MaxFactry.Core.MaxConvertLibrary.ConvertToString(typeof(object), MaxFactry.Core.MaxConfigurationLibrary.GetValue(MaxFactry.Core.MaxEnumGroup.Scope23, "PaymentTypeAvailable"));
+                    int lnPaymentTypeCount = 0;
+                    List<string> loPaymentTypeAvailableList = new List<string>();
+                    if (!string.IsNullOrEmpty(lsPaymentTypeAvailable))
+                    {
+                        loPaymentTypeAvailableList.AddRange(lsPaymentTypeAvailable.Split(new char[] { ',' }));
+                    }
+
+                    for (int lnM = 0; lnM < Model.OrderPaymentList.Count; lnM++)
+                    {
+                        if (loPaymentTypeAvailableList.Count == 0)
+                        {
+                            if (Model.OrderPaymentList[lnM].OrderPaymentDetail.DetailType == MaxFactry.Module.Catalog.BusinessLayer.MaxOrderPaymentDetailEntity.PaymentDetailTypeGeneral)
+                            {
+                                if ((User.IsInRole("Admin") || User.IsInRole("Admin - App")))
+                                {
+                                    Model.OrderPaymentList[lnM].IsActive = true;
+                                    lnPaymentTypeCount++;
+                                }
+                                else
+                                {
+                                    Model.OrderPaymentList[lnM].IsActive = false;
+                                }
+                            }
+                            else
+                            {
+                                Model.OrderPaymentList[lnM].IsActive = true;
+                                lnPaymentTypeCount++;
+                            }
+                        }
+                        else if (loPaymentTypeAvailableList.Contains(Model.OrderPaymentList[lnM].OrderPaymentDetail.DetailType))
+                        {
+                            Model.OrderPaymentList[lnM].IsActive = true;
+                            lnPaymentTypeCount++;
+                        }
+                        else
+                        {
+                            Model.OrderPaymentList[lnM].IsActive = false;
+                        }
+                    }
+                    for (int lnM = 0; lnM < Model.OrderPaymentList.Count; lnM++)
+                    {
+                        if (Model.OrderPaymentList[lnM].IsActive)
+                        {
+                            if (lnPaymentTypeCount > 1)
+                            {
+                                if (Model.OrderPaymentList[lnM].OrderPaymentDetail.DetailType == MaxFactry.Module.Catalog.BusinessLayer.MaxOrderPaymentDetailEntity.PaymentDetailTypeCard)
+                                {
+                                @Html.EditorFor(m => m.OrderPaymentList[lnM].IsSelected, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Credit Card", IsCheckBox = "true" });
+                                }
+                                else if (Model.OrderPaymentList[lnM].OrderPaymentDetail.DetailType == MaxFactry.Module.Catalog.BusinessLayer.MaxOrderPaymentDetailEntity.PaymentDetailTypeGeneral)
+                                {
+                                @Html.EditorFor(m => m.OrderPaymentList[lnM].IsSelected, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Other Payment Type", IsCheckBox = "true" });
+                                }
+                            }
+                            else
+                            {
+                                Model.OrderPaymentList[lnM].IsSelected = "true";
+                                @Html.HiddenFor(m => m.OrderPaymentList[lnM].IsSelected);
+                            }
+
+                            @Html.EditorFor(m => m.OrderPaymentList[lnM]);
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(m => m.OrderPaymentList[lnM].Id);
+                        }
+                    }
+                }
+            </fieldset>
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-6 text-right">&nbsp;</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6 text-right">
+                <button type="submit" name="uoProcess" value="Continue" class="btn btn-success btn-large">Continue</button>
+            </div>
+
+        </div>
+    </div>
+
+}
+
+@section StyleSection {
+    <style>
+        .form-inline .form-group {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .bg-danger {
+            font-weight: bold;
+            background-color: white;
+            color: red;
+            border: 4px solid red;
+        }
+    </style>
+
+    <style type="text/css">
+        #udOrder {
+            padding-bottom: 30px;
+        }
+
+            #udOrder .ussName {
+                padding-bottom: 5px;
+                font-weight: bold;
+                font-size: 110%;
+            }
+
+            #udOrder .ussLabel {
+                font-weight: bold;
+                padding-right: 10px;
+            }
+
+            #udOrder .ussQuantity {
+                width: 50px;
+            }
+
+            #udOrder .ussItemDivider {
+                margin-top: 2px;
+                margin-bottom: 2px;
+            }
+
+            #udOrder .ussItemPriceLabel {
+                padding-right: 10px;
+            }
+
+            #udOrder .ussItemImage {
+                width: 62px;
+            }
+
+            #udOrder .ussSku {
+                margin-right: 10px;
+            }
+
+            #udOrder .ussOption {
+                margin-right: 10px;
+            }
+    </style>
+
+
+}
+
+@section ScriptSection
+{
+    <script>
+        function pfShowWaitDialog() {
+            $('#pleaseWaitDialog').modal({ keyboard: false });
+        }
+
+        function pfPreventEnterKey(loEvent) {
+            var loEvent = (loEvent) ? loEvent : ((event) ? event : null);
+            var loNode = (loEvent.target) ? loEvent.target : ((loEvent.srcElement) ? loEvent.srcElement : null);
+            if ((loEvent.keyCode == 13) && (loNode.type == "text")) { return false; }
+        }
+
+        $('button:submit').click(function () {
+            pfShowWaitDialog();
+        });
+
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+            $('#udOrderForm input').on("keypress", function (e) {
+                if (e.keyCode == 13) {
+                    return false;
+                }
+            });
+        });
+
+    </script>
+
+}
+
+<div class="modal fade" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h1>Processing...</h1></div>
+            <div class="modal-body">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

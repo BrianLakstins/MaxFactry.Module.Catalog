@@ -1,0 +1,49 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxCategoryImageViewModel
+
+<div>@ViewBag.Message</div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+    
+        if (!String.IsNullOrEmpty(Model.Id))
+        {
+        <fieldset>
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.CategoryId)
+            <legend>Edit Category Image</legend>
+            @Html.EditorFor(m => m.Image, additionalViewData: new { LabelColumnWidth = 2, InputControl = MvcHtmlString.Create("<div style='border:solid 1px grey; background-color:grey;'><img src='" + Model.ContentUrl + "' class='img-responsive' /></div>") })
+            @Html.DisplayFor(m => m.Id, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.DisplayFor(m => m.CreatedDate, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.DisplayFor(m => m.FileName, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.DisplayFor(m => m.ContentUrl, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.AlternateText, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.ImageType, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.Active, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-4">
+                        <div class="input-group">
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDelete" onclick="return (confirm('are you sure?'));" class="btn btn-danger">Delete</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDone" class="btn btn-default">Done</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessSave" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</fieldset>        
+        }
+
+    }
+
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+
+}

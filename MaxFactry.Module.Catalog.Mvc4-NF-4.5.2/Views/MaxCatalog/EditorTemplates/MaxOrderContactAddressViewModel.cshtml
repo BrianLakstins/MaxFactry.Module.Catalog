@@ -1,0 +1,56 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderContactAddressViewModel
+
+@Html.HiddenFor(m => m.Id)
+
+<div class="row">
+    <label class="col-sm-2 control-label">Address</label>
+    <div class="col-sm-10 form-group @Html.MaxErrorClassFor(m => m.DeliveryAddress)">
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.DeliveryAddress, htmlAttributes: new { Class = "form-control", placeholder = "Street and extended address information." })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.DeliveryAddress))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <label class="col-sm-2 control-label">City</label>
+    <div class="col-sm-10 form-group @Html.MaxErrorClassFor(m => m.City)">
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.City, htmlAttributes: new { Class = "form-control", placeholder = "City" })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.City))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>
+<div class="row">
+    <label class="col-sm-2 control-label hidden-xs">State/Zip</label>
+    <label class="col-sm-2 control-label visible-xs">State</label>
+    <div class="col-sm-4 form-group @Html.MaxErrorClassFor(m => m.StateCode)">
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.StateCode, new SelectList(Model.GetStateList(), "Value", "Key", Model.StateCode), htmlAttributes: new { Class = "form-control" })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.StateCode))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+    <label class="col-sm-2 control-label visible-xs">Zip Code</label>
+    <div class="col-sm-4 form-group @Html.MaxErrorClassFor(m => m.PostalCode)">
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.PostalCode, htmlAttributes: new { Class = "form-control", placeholder = "Zip Code" })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.PostalCode))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>

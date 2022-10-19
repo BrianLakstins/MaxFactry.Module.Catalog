@@ -1,0 +1,44 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxProductImageViewModel
+
+<h1>Product Image Management</h1>
+<div>@ViewBag.Message</div>
+
+@{
+    var loList = Model.GetSortedList();
+    if (loList.Count > 0)
+    {
+    <table class="table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Name</th>
+                <th>Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loModel in loList)
+            {
+                <tr>
+                    <td>@Html.ActionLink("Edit", "ProductImageEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })
+                    <td>@loModel.Name</td>
+                    <td>
+                        @if (loModel.ContentUrl.Length > 0)
+                    {
+                        <div style="border:solid 1px grey; background-color:grey;"><a href="@loModel.ContentUrl" target="_blank"><img src="@loModel.ContentUrl" class="img-responsive" /></a></div>
+                    }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>    
+}}
+
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+
+}

@@ -1,0 +1,344 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxProductViewModel
+
+<h1>Product Management</h1>
+<div>@ViewBag.Message</div>
+@using (Html.BeginForm("ProductEdit", "MaxCatalogManage", FormMethod.Post, new Dictionary<string, object> { { "role", "form" }, { "class", "form-horizontal" } }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    if (!String.IsNullOrEmpty(Model.Id))
+    {
+        <fieldset>
+            @Html.HiddenFor(m => m.Id)
+            <legend>Edit Product</legend>
+            @{
+                IHtmlString loOverrideName = null;
+                IHtmlString loOverrideSku = null;
+                IHtmlString loOverridePriceBase = null;
+                IHtmlString loOverridePerText = null;
+                IHtmlString loOverridePerQuantity = null;
+                IHtmlString loOverridePriceBaseShipping = null;
+                IHtmlString loOverrideDescriptionShort = null;
+                IHtmlString loOverrideDescription = null;
+                IHtmlString loOverrideDescriptionList = null;
+                IHtmlString loOverridePriceByQuantityList = null;
+                IHtmlString loOverrideOptionByNameList = null;
+                IHtmlString loOverridePrimaryImageId = null;
+            }
+
+            @Html.DisplayFor(m => m.Id, additionalViewData: new { LabelColumnWidth = 2 })
+            @if (!string.IsNullOrEmpty(Model.ParentId))
+            {
+                @Html.HiddenFor(m => m.ParentId)
+                @Html.EditorFor(m => m.ParentId, additionalViewData: new { LabelColumnWidth = 2, IsReadOnly = true, Value = Html.ActionLink(Model.ParentProduct.Name, "ProductEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", Model.ParentProduct.Id } }, new Dictionary<string, object> { }).ToString() })
+            }
+            else if (!string.IsNullOrEmpty(Model.RootId))
+            {
+                @Html.HiddenFor(m => m.RootId)
+                @Html.EditorFor(m => m.RootId, additionalViewData: new { LabelColumnWidth = 2, IsReadOnly = true, Value = Html.ActionLink(Model.RootProduct.Name, "ProductEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", Model.RootProduct.Id } }, new Dictionary<string, object> { }).ToString() })
+                loOverrideName = Html.CheckBoxFor(m => m.IsOverrideName, htmlAttributes: new { });
+                loOverrideSku = Html.CheckBoxFor(m => m.IsOverrideSku, htmlAttributes: new { });
+                loOverridePriceBase = Html.CheckBoxFor(m => m.IsOverridePriceBase, htmlAttributes: new { });
+                loOverridePerText = Html.CheckBoxFor(m => m.IsOverridePerText, htmlAttributes: new { });
+                loOverridePerQuantity = Html.CheckBoxFor(m => m.IsOverridePerQuantity, htmlAttributes: new { });
+                loOverridePriceBaseShipping = Html.CheckBoxFor(m => m.IsOverridePriceBaseShipping, htmlAttributes: new { });
+                loOverrideDescriptionShort = Html.CheckBoxFor(m => m.IsOverrideDescriptionShort, htmlAttributes: new { });
+                loOverrideDescription = Html.CheckBoxFor(m => m.IsOverrideDescription, htmlAttributes: new { });
+                loOverrideDescriptionList = Html.CheckBoxFor(m => m.IsOverrideDescriptionList, htmlAttributes: new { });
+                loOverridePriceByQuantityList = Html.CheckBoxFor(m => m.IsOverridePriceByQuantityList, htmlAttributes: new { });
+                loOverrideOptionByNameList = Html.CheckBoxFor(m => m.IsOverrideOptionByNameList, htmlAttributes: new { });
+                loOverridePrimaryImageId = Html.CheckBoxFor(m => m.IsOverridePrimaryImageId, htmlAttributes: new { });
+            }
+
+            @Html.EditorFor(m => m.PrimaryCatalogId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.PrimaryCatalogId, new SelectList(Model.CatalogList, "Id", "Name", Model.PrimaryCatalogId), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2, OverrideControl = loOverrideName })
+            @Html.EditorFor(m => m.Sku, additionalViewData: new { LabelColumnWidth = 2, OverrideControl = loOverrideSku })
+            @Html.EditorFor(m => m.PriceBase, additionalViewData: new { LabelColumnWidth = 2, OverrideControl = loOverridePriceBase })
+            @Html.EditorFor(m => m.PerText, additionalViewData: new { LabelColumnWidth = 2, OverrideControl = loOverridePerText })
+            @Html.EditorFor(m => m.PerQuantity, additionalViewData: new { LabelColumnWidth = 2, InputType = "number", OverrideControl = loOverridePerQuantity })
+            @Html.EditorFor(m => m.PriceBaseShipping, additionalViewData: new { LabelColumnWidth = 2, OverrideControl = loOverridePriceBaseShipping })
+            @Html.EditorFor(m => m.DescriptionShort, additionalViewData: new { LabelColumnWidth = 2, OverrideControl = loOverrideDescriptionShort })
+
+            @Html.EditorFor(m => m.PrimaryCategoryId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.PrimaryCategoryId, new SelectList(Model.CategoryList, "Id", "PathText", Model.PrimaryCategoryId), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.CategoryIdList, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.TextAreaFor(m => m.CategoryIdList, new Dictionary<string, object> { { "class", "form-control" } }) })
+
+            @if (Model.ImageList.Count > 0)
+            {
+                @Html.EditorFor(m => m.PrimaryImageId, additionalViewData: new { LabelColumnWidth = 2, OverrideControl = loOverridePrimaryImageId, InputControl = Html.DropDownListFor(m => m.PrimaryImageId, new SelectList(Model.ImageList, "Id", "Name", Model.PrimaryImageId), new Dictionary<string, object> { { "class", "form-control" } }) })
+            }
+
+            @Html.EditorFor(m => m.Description, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.TextAreaFor(m => m.Description, new Dictionary<string, object> { { "class", "form-control" } }), OverrideControl = loOverrideDescription })
+            <div class="row" style="padding: 2px 2px 2px;">
+                <div class="col-md-12" style="border: 2px dashed black;">
+                    @Html.EditorFor(m => m.DescriptionList, additionalViewData: new { LabelColumnWidth = 2, IsReadOnly = true, Value = "Multiple descriptions each with their own title.", OverrideControl = loOverrideDescriptionList })
+                    @for (int lnP = 0; lnP < Model.DescriptionList.Count; lnP++)
+                    {
+                        @Html.EditorFor(m => m.DescriptionList[lnP].Title, additionalViewData: new { LabelColumnWidth = 2 })
+                        @Html.EditorFor(m => m.DescriptionList[lnP].Description, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.TextAreaFor(m => m.DescriptionList[lnP].Description, new Dictionary<string, object> { { "class", "form-control" } }) })
+                        <hr />
+                    }
+                </div>
+            </div>
+
+            <div class="row" style="padding: 2px 2px 2px;">
+                <div class="col-md-12" style="border: 2px dashed black;">
+                    @Html.EditorFor(m => m.PriceByQuantityList, additionalViewData: new { LabelColumnWidth = 2, IsReadOnly = true, Value = "Prices based on quantity", OverrideControl = loOverridePriceByQuantityList })
+                    <div class="row">
+                        <div class="col-md-2">&nbsp;</div>
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <table class="ussPriceByQuantityTable">
+                                        <tr><th>Start</th><th>End</th><th>Price</th></tr>
+                                        @for (int lnP = 0; lnP < Model.PriceByQuantityList.Count; lnP++)
+                                        {
+                                            <tr>
+                                                <td>@Html.TextBoxFor(m => m.PriceByQuantityList[lnP].Start, htmlAttributes: new { Type = "number", Class = "form-control text-right", style = "width:8em;" })</td>
+                                                <td>@Html.TextBoxFor(m => m.PriceByQuantityList[lnP].End, htmlAttributes: new { Type = "number", Class = "form-control text-right", style = "width:8em;" })</td>
+                                                <td>@Html.TextBoxFor(m => m.PriceByQuantityList[lnP].Price, htmlAttributes: new { Type = "number", Class = "form-control text-right", Step = "any", style = "width:10em;" })</td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row" style="padding: 2px 2px 2px;">
+                <div class="col-md-12" style="border: 2px dashed black;">
+                    @Html.EditorFor(m => m.OptionByNameList, additionalViewData: new { LabelColumnWidth = 2, IsReadOnly = true, Value = "Product Option Combinations", OverrideControl = loOverrideOptionByNameList })
+                    <div class="row">
+                        <div class="col-md-2">&nbsp;</div>
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <table class="ussOptionByNameTable">
+                                        <tr><th>Name</th><th>Value</th><th>Order</th><th>SKU Suffix</th><th>Added Price</th><th>Added Shipping</th></tr>
+                                        @{
+                                            int lnNameWidth = 6;
+                                            int lnOptionWidth = 6;
+                                            for (int lnP = 0; lnP < Model.OptionByNameList.Count; lnP++)
+                                            {
+                                                if (null != Model.OptionByNameList[lnP].Name && Model.OptionByNameList[lnP].Name.Length > lnNameWidth)
+                                                {
+                                                    lnNameWidth = Model.OptionByNameList[lnP].Name.Length + 1;
+                                                }
+                                                if (null != Model.OptionByNameList[lnP].Option && Model.OptionByNameList[lnP].Option.Length > lnOptionWidth)
+                                                {
+                                                    lnOptionWidth = Model.OptionByNameList[lnP].Option.Length + 1;
+                                                }
+                                            }
+                                        }
+
+                                        @for (int lnP = 0; lnP < Model.OptionByNameList.Count; lnP++)
+                                        {
+                                            <tr>
+                                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].Name, htmlAttributes: new { Type = "text", Class = "form-control", style = "width:" + lnNameWidth.ToString() + "em;" })</td>
+                                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].Option, htmlAttributes: new { Type = "text", Class = "form-control", style = "width:" + lnOptionWidth.ToString() + "em;" })</td>
+                                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].DisplayOrder, htmlAttributes: new { Type = "number", Class = "form-control", Step = "any", style = "width:6em;" })</td>
+                                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].SkuSuffix, htmlAttributes: new { Type = "text", Class = "form-control", style = "width:6em;" })</td>
+                                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].AdditionalPrice, htmlAttributes: new { Type = "number", Class = "form-control text-right", Step = "any", style = "width:9em;", Value = string.Format("{0:F2}", Model.OptionByNameList[lnP].AdditionalPrice) })</td>
+                                                <td>@Html.TextBoxFor(m => m.OptionByNameList[lnP].AdditionalShipping, htmlAttributes: new { Type = "number", Class = "form-control text-right", Step = "any", style = "width:9em;", Value = string.Format("{0:F2}", Model.OptionByNameList[lnP].AdditionalShipping) })</td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+            @if (false || string.IsNullOrEmpty(Model.ParentId))
+            {
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ChildListText, htmlAttributes: new { Class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            @{
+                                var loList = Model.GetChildList();
+                                if (loList.Count > 0)
+                                {
+                                    <table class="ussProductVariationTable">
+                                        <tr><th>Name</th><th>Action</th></tr>
+                                        @foreach (var loModel in loList)
+                                        {
+                                            <tr>
+                                                <td>@loModel.Name</td>
+                                                <td>
+                                                    @Html.ActionLink("Edit", "ProductEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })
+                                                    @Html.ActionLink("View", "Product", "MaxCatalog", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                }
+                            }
+                            @Html.ActionLink("Create new Child", "ProductChild", "MaxCatalogManage", new RouteValueDictionary { { "id", Model.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                                }
+
+            @if (string.IsNullOrEmpty(Model.RootId))
+            {
+                <div class="form-group">
+                    @Html.LabelFor(m => m.BranchListText, htmlAttributes: new { Class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            @{
+                                var loList = Model.GetBranchList();
+                                if (loList.Count > 0)
+                                {
+                                    <table class="ussProductVariationTable">
+                                        <tr><th>Name</th><th>Action</th></tr>
+                                        @foreach (var loModel in loList)
+                                        {
+                                            <tr>
+                                                <td>@loModel.Name</td>
+                                                <td>
+                                                    @Html.ActionLink("Edit", "ProductEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })
+                                                    @Html.ActionLink("View", "Product", "MaxCatalog", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                }
+                            }
+                            @Html.ActionLink("Create new Branch", "ProductBranch", "MaxCatalogManage", new RouteValueDictionary { { "id", Model.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                                }
+
+            @if (string.IsNullOrEmpty(Model.RootId) && string.IsNullOrEmpty(Model.ParentId))
+            {
+                @Html.EditorFor(m => m.PrimaryManufacturerId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.PrimaryManufacturerId, new SelectList(Model.ManufacturerList, "Id", "Name", Model.PrimaryManufacturerId), new Dictionary<string, object> { { "class", "form-control" } }) })
+                @Html.EditorFor(m => m.PrimaryManufacturerSku, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Manufacturer Sku" })
+                @Html.EditorFor(m => m.PrimaryVendorId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.PrimaryVendorId, new SelectList(Model.VendorList, "Id", "Name", Model.PrimaryVendorId), new Dictionary<string, object> { { "class", "form-control" } }) })
+                @Html.EditorFor(m => m.PrimaryVendorSku, additionalViewData: new { LabelColumnWidth = 2 })
+            }
+            else
+            {
+                //// TODO: Add "Display For" here
+            }
+
+            @Html.EditorFor(m => m.Active, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+
+
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <div class="input-group">
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDelete" onclick="return (confirm('are you sure?'));" class="btn btn-danger">Delete</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDone" class="btn btn-default">Done</button>
+                            @if (Model.IsEditable)
+                            {
+                                <button type="submit" name="uoProcess" value="@MaxManageController.ProcessSave" class="btn btn-primary">Save</button>
+                            }
+                            else
+                            {
+                                <span>@Model.BranchType</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+                                    }
+                                }
+
+@using (Html.BeginForm("ProductImage", "MaxCatalogManage", FormMethod.Post, new Dictionary<string, object> { { "role", "form" }, { "class", "form-horizontal" }, { "enctype", "multipart/form-data" } }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <fieldset>
+        <legend>Product Images</legend>
+        @Html.HiddenFor(m => m.Id)
+        <div class="form-group">
+            <label for="laFile" class="control-label col-md-2">Choose one or more images to add to product.</label>
+            <div class="input-group">
+                <div class="col-md-10">
+                    <input type="file" name="laFile" multiple="multiple" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCreate" class="btn btn-primary">Upload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (null != ViewBag.LogInfo)
+        {
+            <pre>@Html.Raw(ViewBag.LogInfo)</pre>
+        }
+        @if (Model.ImageList.Count > 0)
+        {
+            <table class="table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Name</th>
+                        <th>Content Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var loModel in Model.ImageList)
+                    {
+                        <tr>
+                            <td>
+                                @Html.ActionLink("Edit", "ProductImageEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+
+                            </td>
+                            <td>@loModel.Name</td>
+                            <td>
+                                @if (loModel.ContentUrl.Length > 0)
+                                {
+                                    <a href="@loModel.ContentUrl" target="_blank">View Image</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </fieldset>
+}
+
+
+
+<script>
+    jQuery("input[name='laFile']").change(function () {
+        jQuery(".btn-primary").attr('disabled', false);
+    });
+</script>
+
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+}

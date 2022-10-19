@@ -1,0 +1,48 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderPaymentViewModel
+
+
+@if (Model.OrderPaymentDetail.DetailType == MaxFactry.Module.Catalog.BusinessLayer.MaxOrderPaymentDetailEntity.PaymentDetailTypeCard)
+{
+    <div class="row">
+        <label class="col-sm-2 control-label">Name</label>
+        <div class="col-sm-5 col-md-5 col-lg-4">
+            <p class="form-control-static" id="@Html.MaxIdFor(m => m.OrderPaymentDetail.CardName)">@Model.OrderPaymentDetail.CardName</p>
+        </div>
+    </div>
+    <div class="row">
+        <label class="col-sm-2 control-label">Number</label>
+        <div class="col-sm-5 col-md-5 col-lg-4">
+            <p class="form-control-static" id="@Html.MaxIdFor(m => m.OrderPaymentDetail.CardNumberHidden)">@Model.OrderPaymentDetail.CardNumberHidden</p>
+        </div>
+    </div>
+    <div class="row">
+        <label class="col-sm-2 control-label">Expire</label>
+        <div class="col-sm-5 col-md-5 col-lg-4">
+            <p class="form-control-static" id="@Html.MaxIdFor(m => m.OrderPaymentDetail.CardExpireMonth)">@(Model.OrderPaymentDetail.CardExpireMonth)/@(Model.OrderPaymentDetail.CardExpireYear)</p>
+        </div>
+    </div>
+    <div class="row">
+        <label class="col-sm-2 control-label">Code</label>
+        <div class="col-sm-5 col-md-5 col-lg-4">
+            <p class="form-control-static" id="@Html.MaxIdFor(m => m.OrderPaymentDetail.CardVerificationHidden)">@Model.OrderPaymentDetail.CardVerificationHidden</p>
+        </div>
+    </div>
+}
+else if (Model.OrderPaymentDetail.DetailType == MaxFactry.Module.Catalog.BusinessLayer.MaxOrderPaymentDetailEntity.PaymentDetailTypeGeneral)
+{
+    @Html.DisplayFor(m => m.OrderPaymentDetail.CardName, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Name" })
+    @Html.DisplayFor(m => m.OrderPaymentDetail.Code, additionalViewData: new { LabelColumnWidth = 2 })
+}
+
+@if (User.IsInRole("Admin - App") && !string.IsNullOrEmpty(Model.CurrentAmount))
+{
+    <div class="row">
+        <label class="col-sm-2 control-label">Amount</label>
+        <div class="col-sm-5 col-md-5 col-lg-4">
+            <p class="form-control-static" id="@Html.MaxIdFor(m => m.CurrentAmount)">@Model.CurrentAmount</p>
+        </div>
+    </div>
+}
+
+
+

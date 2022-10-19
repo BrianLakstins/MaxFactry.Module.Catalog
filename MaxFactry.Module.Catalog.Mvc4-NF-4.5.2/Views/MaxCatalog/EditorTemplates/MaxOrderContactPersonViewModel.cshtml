@@ -1,0 +1,86 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderContactPersonViewModel
+@{
+    bool lbShowEmailSignup = false;
+    string lsStorageKey = MaxFactry.Base.DataLayer.MaxDataLibrary.GetStorageKey(null);
+    if (lsStorageKey == "037a5df8-9d2c-4d9b-ac57-b3a27490a794")
+    {
+        lbShowEmailSignup = true;
+    }
+}
+@Html.HiddenFor(m => m.Id)
+
+<div class="row">
+    <label class="col-sm-2 control-label hidden-xs">Name</label>
+    <label class="col-sm-2 control-label visible-xs">First Name</label>
+    <div class="col-sm-5 col-md-5 col-lg-4 form-group @Html.MaxErrorClassFor(m => m.CurrentFirstName)">
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.CurrentFirstName, htmlAttributes: new { Class = "form-control", placeholder = "First Name" })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.CurrentFirstName))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+
+    <label class="col-sm-2 control-label visible-xs">Last Name</label>
+    <div class="col-sm-5 col-md-5 col-lg-4 form-group @Html.MaxErrorClassFor(m => m.CurrentLastName)">
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.CurrentLastName, htmlAttributes: new { Class = "form-control", placeholder = "Last Name" })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.CurrentLastName))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <label class="col-sm-2 control-label">Email</label>
+    <div class="col-sm-5 col-md-5 col-lg-4 form-group @Html.MaxErrorClassFor(m => m.Email)">
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Email, htmlAttributes: new { Class = "form-control", placeholder = "name@domain.com" })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.Email))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+    @if (lbShowEmailSignup)
+    { 
+    <div class="col-sm-5">
+        <div class="checkbox">
+            <label>
+            @Html.CheckBoxFor(m => m.EmailSignup, htmlAttributes: new { tabindex = "-1" })
+            Subscribe to newsletter</label>
+        </div>
+    </div>
+    }
+</div>
+
+<div class="row">
+    <label class="col-sm-2 control-label">Phone</label>
+    <div class="col-sm-6 col-md-5 col-lg-4 form-group @Html.MaxErrorClassFor(m => m.Phone)">
+        <div class="input-group">
+            @Html.TextBoxFor(m => m.Phone, htmlAttributes: new { Class = "form-control", placeholder = "(123)456-7890" })
+            @Html.MaxToolTip("Required", "asterisk")
+        </div>
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.Phone))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>
+            
+<div class="row">
+    <label class="col-sm-2 control-label">Note</label>
+    <div class="col-sm-10 form-group @Html.MaxErrorClassFor(m => m.Note)">
+        @Html.TextBoxFor(m => m.Note, htmlAttributes: new { Class = "form-control", placeholder = "How did you hear about us?" })
+        @foreach (var loError in Html.MaxGetErrorListFor(m => m.Note))
+        {
+            <span class="help-block">@loError.ErrorMessage</span>
+        }
+    </div>
+</div>

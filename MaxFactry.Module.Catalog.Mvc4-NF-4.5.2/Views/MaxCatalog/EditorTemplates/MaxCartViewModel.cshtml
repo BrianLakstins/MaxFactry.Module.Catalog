@@ -1,0 +1,449 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxCartViewModel
+@{
+    bool lbShowCoupon = false;
+    string lsStorageKey = MaxFactry.Base.DataLayer.MaxDataLibrary.GetStorageKey(null);
+    if (lsStorageKey == "037a5df8-9d2c-4d9b-ac57-b3a27490a794")
+    {
+        lbShowCoupon = true;
+    }
+
+    string lsTaxOverride = MaxFactry.Core.MaxConfigurationLibrary.GetValue(MaxFactry.Core.MaxEnumGroup.Scope23, "TaxOverride") as string;
+    if (!string.IsNullOrEmpty(lsTaxOverride))
+    {
+        int lnTaxOverride = 0;
+        if (Int32.TryParse(lsTaxOverride, out lnTaxOverride))
+        {
+            Model.TaxOverride = lnTaxOverride;
+            Model.Save();
+            Model.EntityLoad();
+            Model.Load();
+        }
+    }
+}
+
+<div class="ussCart" id="udCart">
+    @Html.HiddenFor(m => m.Id)
+    <fieldset>
+        @if (Model.ItemList.Count <= 0)
+        {
+            <div class="row">
+                <div class="col-xs-12 text-center bg-info"><strong>There are currently no items in the cart.</strong></div>
+            </div>
+        }
+        else
+        {
+            var lbHasItemDiscount = false;
+            var lnItemColumnWidth = 7;
+            for (int lnCI = 0; lnCI < Model.ItemList.Count; lnCI++)
+            {
+                if (Model.ItemList[lnCI].DiscountAmount > 0)
+                {
+                    lbHasItemDiscount = true;
+                    lnItemColumnWidth = 5;
+                }
+            }
+
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 text-center"></div>
+                <div class="col-sm-10 col-xs-9">
+                    <div class="row">
+                        <div class="col-sm-@lnItemColumnWidth col-xs-9"><strong>Items</strong></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right"><strong>Price</strong></div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-3 text-center"><strong>Qty</strong></div>
+                        @if (lbHasItemDiscount)
+                        {
+                            <div class="col-sm-2 hidden-xs text-right"><strong>Discount</strong></div>
+                        }
+                        <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right"><strong>Total</strong></div>
+                    </div>
+                </div>
+            </div>
+            for (int lnCI = 0; lnCI < Model.ItemList.Count; lnCI++)
+            {
+                var loItemView = Model.ItemList[lnCI];
+                @Html.HiddenFor(m => m.ItemList[lnCI].Id)
+                @Html.HiddenFor(m => m.ItemList[lnCI].ContainerId)
+                @Html.HiddenFor(m => m.ItemList[lnCI].OriginalValues["ManualDiscountAmount"])
+                @Html.HiddenFor(m => m.ItemList[lnCI].OriginalValues["ManualDiscountReason"])
+                @Html.HiddenFor(m => m.ItemList[lnCI].OriginalValues["Quantity"])
+                <div class="row">
+                    <hr class="ussItemDivider" />
+                    <div class="col-sm-2 col-xs-3 text-center">
+                        @if (!string.IsNullOrEmpty(loItemView.ImageUrl))
+                        {
+                            string lsImageUrl = loItemView.ImageUrl;
+                            if (loItemView.ImageUrl.ToLower().StartsWith("http://"))
+                            {
+                                lsImageUrl = lsImageUrl.Substring(5);
+                            }
+                            <img style="max-height:150px;" class="ussItemImage img-responsive" src="@lsImageUrl" alt="@loItemView.Name">
+                        }
+                        else
+                        {
+                            <img class="ussItemImage img-responsive" src="//s.dns9.co/ct/MaxCart/CartImage.gif" alt="@loItemView.Name">
+                        }
+                    </div>
+                    <div class="col-sm-10 col-xs-9">
+                        <div class="row">
+                            <div class="col-sm-@lnItemColumnWidth col-xs-9">
+                                <div class="ussName">
+                                    @if (!string.IsNullOrEmpty(loItemView.ItemUrl))
+                                    {
+                                        <a href="@loItemView.ItemUrl" target="_top">@loItemView.Name</a>
+                                    }
+                                    else
+                                    {
+                                        @loItemView.Name
+                                    }
+                                </div>
+                                <div class="ussDescription">
+                                    <div><span class="ussSkuLabel">SKU: </span><span class="ussSku">@loItemView.Sku</span></div>
+                                    @if (loItemView.InventoryAmount > long.MinValue)
+                                    {
+                                        <div><span class="ussInventory">@loItemView.InventoryMessage</span></div>
+                                    }
+                                    @for (int lnO = 0; lnO < loItemView.OptionList.Count; lnO++)
+                                    {
+                                        <div>
+                                            <span class="ussOptionLabel">@loItemView.OptionList[lnO].Name: </span><span class="ussOption">@loItemView.OptionList[lnO].Option</span>
+                                        </div>
+                                    }
+                                    @if (User.IsInRole("Admin - App") && !string.IsNullOrEmpty(loItemView.Note))
+                                    {
+                                        <div><span class="ussNoteLabel">Note: </span><span class="ussNote">@loItemView.Note</span></div>
+                                    }
+
+                                    @if (loItemView.DiscountAmount > 0)
+                                    {
+                                        <div><span class="ussDiscountReason">@loItemView.DiscountReason</span></div>
+                                    }
+                                </div>
+                                <div class="visible-xs"><span class=" ussitempricelabel">Price:</span> <span class="ussItemPrice">@string.Format("{0:C}", loItemView.ItemPrice)</span></div>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right"><span class="ussItemPrice">@string.Format("{0:C}", loItemView.ItemPrice)</span></div>
+                            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-3 text-center">
+                                @Html.TextBoxFor(m => m.ItemList[lnCI].Quantity, htmlAttributes: new { Class = "ussQuantity text-right form-control", type = "number" })
+                                <button type="submit" name="uoProcess" value="Update" class="btn btn-success btn-xs">Update</button>
+                            </div>
+                            @if (lbHasItemDiscount)
+                            {
+                                <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right"><span class="ussItemTotal">@string.Format("{0:C}", loItemView.DiscountAmount)</span></div>
+                            }
+                            <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right"><span class="ussItemTotal">@string.Format("{0:C}", loItemView.ItemTotal)</span></div>
+                        </div>
+                        @if (loItemView.DiscountAmount > 0)
+                        {
+                            <div class="row">
+                                <div class="col-xs-6 text-right visible-xs col-xs-offset-2" style="padding-right: 0px;"><strong>Discount:</strong></div>
+                                <div class="col-xs-4 text-right visible-xs" style="padding-left:0px;"><span class="ussItemTotal">@string.Format("{0:C}", loItemView.DiscountAmount)</span></div>
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="col-xs-2">
+                                <button type="submit" name="uoProcess" value="Delete@(loItemView.Id)" class="btn btn-success btn-xs">Delete</button>
+                            </div>
+                            <div class="col-xs-6 text-right visible-xs" style="padding-right: 0px;"><strong>Total:</strong></div>
+                            <div class="col-xs-4 text-right visible-xs" style="padding-left:0px;"><span class="ussItemTotal">@string.Format("{0:C}", loItemView.ItemTotal)</span></div>
+                        </div>
+
+                        @if (User.IsInRole("Admin - App"))
+                        {
+                            <div class="row">
+                                <div class="col-sm-@lnItemColumnWidth col-xs-9">
+                                    <div class="ussItemDiscountLabel">Product Discount</div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.ItemList[lnCI].ManualDiscountReason, htmlAttributes: new { Class = "ussItemDiscountReason form-control", style = "", placeholder = "Reason" })
+                                    </div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.ItemList[lnCI].ManualDiscountAmount, htmlAttributes: new { Class = "ussItemDiscount text-right form-control", type = "number", style = "width: 100px; display: inline;", placeholder = "$0.00" })
+                                        <button type="submit" name="uoProcess" value="Update" class="btn btn-success btn-xs">Save</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            }
+
+            <div class="row">
+                <hr class="ussItemDivider" />
+                <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs">
+                    &nbsp;
+                </div>
+                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                    @{
+                        var loShippingAvailableList = new List<MaxFactry.Module.Catalog.BusinessLayer.MaxShippingTypeEntity>();
+                        var lbShowMoreInfo = false;
+                        string lsShippingTypeList = MaxFactry.Core.MaxConfigurationLibrary.GetValue(MaxFactry.Core.MaxEnumGroup.Scope23, "ShippingTypeAvailable") as string;
+                        List<string> loShippingTypeList = new List<string>();
+                        if (null != lsShippingTypeList)
+                        {
+                            loShippingTypeList.AddRange(lsShippingTypeList.Split(new char[] { ',' }));
+                        }
+
+                        if (Model.ShippingTypeList.Count > 0)
+                        {
+                            for (int lnST = 0; lnST < Model.ShippingTypeList.Count; lnST++)
+                            {
+                                var loShippingTypeEntity = Model.ShippingTypeList[lnST];
+                                if (loShippingTypeEntity.IsSelectable && (loShippingTypeList.Count == 0 || loShippingTypeList.Contains(loShippingTypeEntity.ShippingType.ToString())))
+                                {
+                                    if (Model.GetShipping(loShippingTypeEntity.ShippingType) != string.Format("{0:C}", 0.0))
+                                    {
+                                        lbShowMoreInfo = true;
+                                    }
+
+                                    loShippingAvailableList.Add(loShippingTypeEntity);
+                                }
+                            }
+                        }
+
+                        <div class="ussName">
+                            Shipping
+                            @if (lbShowMoreInfo && loShippingAvailableList.Count > 1)
+                {
+                                <span>(<a href="javascript:pfShowShipping();">More info</a>)</span>
+                            }
+                        </div>
+                        <div class="ussDescription">
+                            @Html.HiddenFor(m => m.OriginalValues["ShippingType"])
+                            <ul class="list-unstyled">
+                                @if (loShippingAvailableList.Count > 0)
+                                {
+                                    if (loShippingAvailableList.Count == 1)
+                                    {
+                                        Model.ShippingType = loShippingAvailableList[0].ShippingType;
+                                        @Html.HiddenFor(m => m.ShippingType)
+                                        if (!string.IsNullOrEmpty(Model.ShippingTypeEntity.Description))
+                                        {
+                                            <div>@Model.ShippingTypeEntity.Description</div>
+                                        }
+                                    }
+                                    else
+                                    { 
+
+                                        foreach (var loShippingTypeEntity in loShippingAvailableList)
+                                        {
+                                            <li>
+                                                <label for="@loShippingTypeEntity.Name">@Html.RadioButtonFor(m => m.ShippingType, loShippingTypeEntity.ShippingType, new { id = loShippingTypeEntity.Name })&nbsp;@loShippingTypeEntity.Name (@Model.GetShipping(loShippingTypeEntity.ShippingType))</label>
+                                            </li>
+                                            <li class="visible-xs">&nbsp;</li>
+                                        }
+                                        <li>
+                                            <button id="udSaveShippingButton" type="submit" name="uoProcess" value="Recalculate" class="btn btn-success btn-xs">Save Shipping Update</button>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li>
+                                        @Html.HiddenFor(m => m.ShippingType)
+                                        @Model.ShippingTypeEntity.Name
+                                        @if (!string.IsNullOrEmpty(Model.ShippingTypeEntity.Description))
+                                        {
+                                            <div>@Model.ShippingTypeEntity.Description</div>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                            @if (Model.ShippingType <= 0)
+                            {
+                                <p class="bg-warning">Please select shipping method so you can place your order.</p>
+                            }
+
+                        </div>
+                    }
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right"><span class="ussItemTotal">@Model.ShippingTotal</span></div>
+            </div>
+
+            <div class="row">
+                <hr class="ussItemDivider" />
+                <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 text-right">Subtotal</div>
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right">@Model.SubTotal@Html.HiddenFor(m => m.SubTotal)</div>
+            </div>
+
+                        if (lbShowCoupon || Model.DiscountCodeList.Count > 0)
+                        {
+                            <div class="row">
+                                <hr class="ussItemDivider" />
+                                <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs">
+                                    &nbsp;
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                                    @if (Model.DiscountCodeList.Count > 0)
+                                    {
+                                        <div class="ussName">Discount</div>
+                                        <div class="ussDescription">
+                                            <ul>
+                                                @foreach (var loDiscount in Model.DiscountCodeList)
+                                                {
+                                                    if (!string.IsNullOrEmpty(loDiscount.ValidReasonCurrent))
+                                                    {
+                                                        <li><a href="?uoRemoveDiscountCode=@loDiscount.Code" onclick="return confirm('This will remove the discount code.  Are you sure?')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a> @loDiscount.ValidReasonCurrent</li>
+                                                    }
+                                                }
+
+                                                @foreach (var loDiscount in Model.DiscountCodeList)
+                                                {
+                                                    if ((!loDiscount.IsUseAlways || User.IsInRole("Admin - App")) &&
+                                                        !string.IsNullOrEmpty(loDiscount.InvalidReasonCurrent))
+                                                    {
+                                                        if (loDiscount.InvalidReasonCurrent.Contains("Manually"))
+                                                        {
+                                                            <li><a href="?uoAddDiscountCode=@loDiscount.Code" onclick="return confirm('This will add the discount code back.  Are you sure?')"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a> Discount code "@(loDiscount.Code)" is not valid. @loDiscount.InvalidReasonCurrent</li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>Discount code "@(loDiscount.Code)" is not valid. @loDiscount.InvalidReasonCurrent</li>
+                                                        }
+                                                    }
+                                                }
+                                            </ul>
+                                        </div>
+                                    }
+                                    @if (lbShowCoupon)
+                                    {
+
+                                        <div class="ussName">Coupon</div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                @Html.TextBoxFor(m => m.CouponCode, htmlAttributes: new { Class = "form-control" })
+                                                <button type="submit" name="uoProcess" value="AddCoupon" class="btn btn-success btn-xs">Add Coupon</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right"><span class="ussItemTotal">@Model.DiscountTotal</span></div>
+                            </div>
+                        }
+
+                        if (User.IsInRole("Admin - App"))
+                        {
+                            <div class="row">
+                                <hr class="ussItemDivider" />
+                                <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs">
+                                    &nbsp;
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                                    <div class="ussName">
+                                        Manual Credit (ending with % calculates credit based on Subtotal amount)
+                                    </div>
+                                    <div class="ussDescription">
+                                        @Html.HiddenFor(m => m.OriginalValues["ManualDiscount"])
+                                        @Html.HiddenFor(m => m.OriginalValues["ManualDiscountExplanation"])
+                                        @Html.EditorFor(m => m.ManualDiscount, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Discount" })
+                                        @Html.EditorFor(m => m.ManualDiscountExplanation, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Explanation" })
+                                        <button type="submit" name="uoProcess" value="Recalculate" class="btn btn-success btn-xs">Save Manual Discount</button>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right"><span class="ussItemTotal">&nbsp;</span></div>
+                            </div>
+                        }
+
+                        if (!string.IsNullOrEmpty(Model.ManualDiscount))
+                        {
+                            <div class="row">
+                                <hr class="ussItemDivider" />
+                                <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 text-right">@Model.ManualDiscountExplanation</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right">@string.Format("{0:C}", MaxFactry.Core.MaxConvertLibrary.ConvertToDouble(typeof(object), Model.ManualDiscount))</div>
+                            </div>
+                        }
+
+                        if (true || Model.TaxTotal > 0 || string.IsNullOrEmpty(Model.TaxLocation))
+                        {
+                            string lsCheckedYes = string.Empty;
+                            string lsCheckedNo = string.Empty;
+                            if (Model.TaxLocation == "IN")
+                            {
+                                lsCheckedYes = "checked='checked'";
+                            }
+                            else if (!string.IsNullOrEmpty(Model.TaxLocation))
+                            {
+                                lsCheckedNo = "checked='checked'";
+                            }
+
+                            string lsCheckedOverrideYes = string.Empty;
+                            string lsCheckedOverrideNo = string.Empty;
+                            string lsCheckedOverrideNoOverride = string.Empty;
+                            if (Model.TaxOverride == 1)
+                            {
+                                lsCheckedOverrideYes = "checked='checked'";
+                            }
+                            else if (Model.TaxOverride == 2)
+                            {
+                                lsCheckedOverrideNo = "checked='checked'";
+                            }
+                            else
+                            {
+                                lsCheckedOverrideNoOverride = "checked='checked'";
+                            }
+
+
+                            <div class="row">
+                                <hr class="ussItemDivider" />
+                                @if (Model.TaxableAmount > 0)
+                                {
+                                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 text-right">Taxable Amount</div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right">@string.Format("{0:C}", Model.TaxableAmount)</div>
+                                }
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs">
+                                    &nbsp;
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                                    <div class="ussName">
+                                        Sales Tax
+                                    </div>
+                                    <div class="ussDescription">
+                                        <div>Indiana Resident <label for="udTaxYes">Yes <input value="IN" id="udTaxYes" name="uoTaxLocation" type="radio" @lsCheckedYes /></label> <label for="udTaxNo">No <input value="!IN" id="udTaxNo" name="uoTaxLocation" type="radio" @lsCheckedNo></label></div>
+                                        <div>Note: Indiana tax exempt entities: contact us by phone before ordering</div>
+                                            @if (User.IsInRole("Admin - App"))
+                                            {
+                                                <div>Override Sales Tax
+                                                <ul class="list-unstyled">
+                                                    <li><label for="udTaxOverrideYes"><input value="1" id="udTaxOverrideYes" name="uoTaxOverride" type="radio" @lsCheckedOverrideYes />Yes - Charge</label> </li>
+                                                    <li><label for="udTaxOverrideNo"><input value="2" id="udTaxOverrideNo" name="uoTaxOverride" type="radio" @lsCheckedOverrideNo>No - Don't Charge</label></li>
+                                                    <li><label for="udTaxOverrideNoOverride"><input value="0" id="udTaxOverrideNoOverride" name="uoTaxOverride" type="radio" @lsCheckedOverrideNoOverride>Don't Override</label></li>
+                                                </ul>
+                                                </div>
+                                            }
+                                        <div><button id="udSaveTaxLocationButton" type="submit" name="uoProcess" value="Recalculate" class="btn btn-success btn-xs">Save Tax Location</button></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right"><span class="ussItemTotal">@string.Format("{0:C}", Model.TaxTotal)</span></div>
+                            </div>
+                        }
+
+                        <div class="row">
+                            <hr class="ussItemDivider" />
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 text-right">Total</div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right">@Model.Total</div>
+                        </div>
+                        }
+    </fieldset>
+</div>
+
+<style>
+    input[type="radio"] {
+        margin-top: -1px;
+        vertical-align: middle;
+    }
+
+    .modal .modal-body {
+        max-height: 420px;
+        overflow-y: auto;
+    }
+</style>
+
+<script type="text/javascript">
+    function pfShowShipping() {
+        $('#udCartShippingPopUpContainer').modal();
+    }
+
+</script>
+

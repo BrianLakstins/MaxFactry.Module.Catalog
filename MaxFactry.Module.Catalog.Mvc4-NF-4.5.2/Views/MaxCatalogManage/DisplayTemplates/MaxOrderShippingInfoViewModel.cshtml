@@ -1,0 +1,15 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderShippingInfoViewModel
+
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.ShippingType)
+@if (Model.IsPickup)
+{
+    @Html.DisplayFor(m => m.PickupDate, additionalViewData: new { LabelColumnWidth = 2, TimeValue = Model.PickupTime })
+}
+else
+{
+    @Html.DisplayFor(m => m.ShippingAddress)
+}
+<div>
+    @Model.Notes
+</div>

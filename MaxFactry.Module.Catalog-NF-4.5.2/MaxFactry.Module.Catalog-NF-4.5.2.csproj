@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D8A79396-0464-40C9-93DF-8A86BDBEF27B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MaxFactry.Module.Catalog_NF_4._5._2</RootNamespace>
+    <AssemblyName>MaxFactry.Module.Catalog-NF-4.5.2</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;net2;net4_52</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;net2;net4_52</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessLayer\Entity\MaxCartEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxCartItemEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxCatalogEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxCategoryEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxCategoryImageEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxClientEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxDiscountCodeEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxInventoryLogEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxInventoryProductEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxInventorySiteEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxInventorySupplyEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxManufacturerEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderConfirmEmailEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderContactAddressEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderContactPersonEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderIdEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderItemEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderItemShippingEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderNotificationEmailEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderPaymentDetailCardEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderPaymentDetailEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderPaymentDetailGeneralEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderPaymentEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderPaymentTransactionEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderProcessLogEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderShippingContactAddressEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderShippingContactPersonEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxOrderShippingInfoEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxProductEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxProductFileEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxProductImageEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxProductImportRuleEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxProductSelectionEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxShippingChargeEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxShippingTypeEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxVendorEntity.cs" />
+    <Compile Include="BusinessLayer\Library\Interface\IMaxCrmLibraryProvider.cs" />
+    <Compile Include="BusinessLayer\Library\Interface\IMaxMailingListLibraryProvider.cs" />
+    <Compile Include="BusinessLayer\Library\Interface\IMaxPaymentLibraryProvider.cs" />
+    <Compile Include="BusinessLayer\Library\MaxCatalogLibrary.cs" />
+    <Compile Include="BusinessLayer\Library\MaxMailingListLibrary.cs" />
+    <Compile Include="BusinessLayer\Library\MaxPaymentLibrary.cs" />
+    <Compile Include="BusinessLayer\Library\Provider\MaxCrmLibraryDefaultProvider.cs" />
+    <Compile Include="BusinessLayer\Library\Provider\MaxMailingListLibraryDefaultProvider.cs" />
+    <Compile Include="BusinessLayer\Library\Provider\MaxPaymentLibraryDefaultProvider.cs" />
+    <Compile Include="BusinessLayer\Structure\MaxDescriptionListStructure.cs" />
+    <Compile Include="BusinessLayer\Structure\MaxOptionByNameStructure.cs" />
+    <Compile Include="BusinessLayer\Structure\MaxOptionCombinationStructure.cs" />
+    <Compile Include="BusinessLayer\Structure\MaxPriceByQuantityStructure.cs" />
+    <Compile Include="BusinessLayer\Structure\MaxProductImportRuleTypeStructure.cs" />
+    <Compile Include="DataLayer\DataModel\MaxCartDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxCartItemDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxCatalogDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxCategoryDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxCategoryImageDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxClientDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxDiscountCodeDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxInventoryLogDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxInventoryProductDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxInventorySiteDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxInventorySupplyDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxManufacturerDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderConfirmEmailDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderContactAddressDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderContactPersonDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderIdDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderItemDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderItemShippingDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderNotificationEmailDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderPaymentDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderPaymentDetailCardDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderPaymentDetailDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderPaymentDetailGeneralDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderPaymentTransactionDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderProcessLogDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderShippingAddressDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderShippingContactPersonDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxOrderShippingInfoDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxProductDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxProductFileDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxProductImageDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxProductImportRuleDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxProductSelectionDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxShippingChargeDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxShippingTypeDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxVendorDataModel.cs" />
+    <Compile Include="DataLayer\Repository\Interface\IMaxCatalogFileRepositoryProvider.cs" />
+    <Compile Include="DataLayer\Repository\Interface\IMaxCatalogRepositoryProvider.cs" />
+    <Compile Include="DataLayer\Repository\Interface\IMaxCatalogSearchRepositoryProvider.cs" />
+    <Compile Include="DataLayer\Repository\Interface\IMaxClientRepositoryProvider.cs" />
+    <Compile Include="DataLayer\Repository\MaxCatalogFileRepository.cs" />
+    <Compile Include="DataLayer\Repository\MaxCatalogIdRepository.cs" />
+    <Compile Include="DataLayer\Repository\MaxCatalogRepository.cs" />
+    <Compile Include="DataLayer\Repository\MaxClientRepository.cs" />
+    <Compile Include="DataLayer\Repository\Provider\MaxCatalogFileRepositoryProvider.cs" />
+    <Compile Include="DataLayer\Repository\Provider\MaxCatalogIdRepositoryProvider.cs" />
+    <Compile Include="DataLayer\Repository\Provider\MaxCatalogRepositoryProvider.cs" />
+    <Compile Include="DataLayer\Repository\Provider\MaxCatalogSearchRepositoryProvider.cs" />
+    <Compile Include="DataLayer\Repository\Provider\MaxClientRepositoryProvider.cs" />
+    <Compile Include="MaxStartup.cs" />
+    <Compile Include="PresentationLayer\Models\MaxCartItemViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxCartViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxCatalogViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxCategoryImageViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxCategoryViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxClientViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxDiscountCodeViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxInventoryLogViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxInventoryProductViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxInventorySiteViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxInventorySupplyViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxManufacturerViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxOrderContactAddressViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxOrderContactPersonViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxOrderItemViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxOrderPaymentDetailViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxOrderPaymentTransactionViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxOrderPaymentViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxOrderProcessLogViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxOrderShippingAddressViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxOrderShippingInfoViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxOrderViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxProductFileViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxProductImageViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxProductImportRuleViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxProductImportViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxProductViewModel.cs" />
+    <Compile Include="PresentationLayer\Models\MaxVendorViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="MaxFactry.pfx" />
+    <None Include="MaxFactry.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Base\MaxFactry.Base-NF-4.5.2\MaxFactry.Base-NF-4.5.2.csproj">
+      <Project>{2120b857-fad6-4310-9ec8-3d958087fee2}</Project>
+      <Name>MaxFactry.Base-NF-4.5.2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\MaxFactry.Core-NF-4.5.2\MaxFactry.Core-NF-4.5.2.csproj">
+      <Project>{db84bcde-6f72-4657-811f-40a824ae041f}</Project>
+      <Name>MaxFactry.Core-NF-4.5.2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\General\MaxFactry.General-NF-4.5.2\MaxFactry.General-NF-4.5.2.csproj">
+      <Project>{a625c04c-84c7-4d75-8e53-8b37542235e0}</Project>
+      <Name>MaxFactry.General-NF-4.5.2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Module.App\MaxFactry.Module.App-NF-4.5.2\MaxFactry.Module.App-NF-4.5.2.csproj">
+      <Project>{a90db255-a762-4ddf-897f-6ef99018d37d}</Project>
+      <Name>MaxFactry.Module.App-NF-4.5.2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Module.Crm\MaxFactry.Module.Crm-NF-4.5.2\MaxFactry.Module.Crm-NF-4.5.2.csproj">
+      <Project>{28fc9c95-01c0-4747-aba7-7cd696e81d6d}</Project>
+      <Name>MaxFactry.Module.Crm-NF-4.5.2</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

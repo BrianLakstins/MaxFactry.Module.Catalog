@@ -1,0 +1,590 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxProductViewModel
+@{
+var loList = Model.DescriptionList;
+for (int lnD = loList.Count - 1; lnD >= 0; lnD--)
+{
+    if (string.IsNullOrEmpty(loList[lnD].Description) ||
+        loList[lnD].Description == Model.Description)
+    {
+        loList.RemoveAt(lnD);
+    }
+}
+}
+
+@if (User.IsInRole("Admin - App") && false)
+{
+    var loProductList = Model.GetSortedList();
+    int lnCurrent = 0;
+    int lnPrevious = 0;
+    int lnNext = 0;
+    for (int lnP = 0; lnP < loProductList.Count; lnP++)
+    {
+        if (loProductList[lnP].Id == Model.Id)
+        {
+            lnCurrent = lnP;
+        }
+    }
+    
+    lnPrevious = lnCurrent - 1;
+    lnNext = lnCurrent + 1;
+    if (lnCurrent == 0)
+    {
+        lnPrevious = loProductList.Count - 1;
+    }
+    else if (lnCurrent == loProductList.Count - 1)
+    {
+        lnNext = 0;
+    }
+        
+    <div class="row">
+        <div class="col-sm-6 bg-info">
+            @Html.ActionLink(loProductList[lnPrevious].Name, "Product", "MaxCatalog", routeValues: new { id = loProductList[lnPrevious].Id }, htmlAttributes: new { Class = "btn btn-primary" })
+        </div>
+        <div class="col-sm-6 bg-info text-right">
+            @Html.ActionLink(loProductList[lnNext].Name, "Product", "MaxCatalog", routeValues: new { id = loProductList[lnNext].Id }, htmlAttributes: new { Class = "btn btn-primary" })
+        </div>
+    </div>
+}
+
+<div class="ussProduct">
+    <div class="row">
+        <div class="col-md-6 col-sm-6">
+            @if (Model.ImageList.Count > 1)
+            {
+                <div role="tabpanel">
+                    <ul class="nav nav-tabs" role="tablist" id="udProductMediaTab">
+                        <li role="presentation" class="active"><a href="#udProductMediaTab0" aria-controls="udProductMediaTab0" role="tab" data-toggle="tab">Images</a></li>
+                        <!--<li role="presentation" class=""><a href="#udProductMediaTab1" aria-controls="udProductMediaTab1" role="tab" data-toggle="tab">Videos</a></li>-->
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="udProductMediaTab0">
+                            <div id="udProductImageTabContent">
+                                <img id="udProductImage1" class="ussProductImage" src="@Model.ImageList[0].ContentUrl" />
+                            </div>
+                            <div id="udProductImageTabNavigation">
+                                <div id="udProductImageTab1Carousel" class="carousel slide" data-ride="carousel">
+                                    <div class="carousel-inner" role="listbox">
+                                        @for (int lnPI = 0; lnPI < Model.ImageList.Count;)
+                                        {
+                                            string lsActive = string.Empty;
+                                            if (lnPI == 0)
+                                            {
+                                                lsActive = " active";
+                                            }
+                                            int lnPIGroup = 0;
+                                            <div class="item@(lsActive)">
+                                                <div class="ussProductImageThumbLeftNavigation">&nbsp;</div>
+                                                @while (lnPI < Model.ImageList.Count && lnPIGroup < 6)
+                                                {
+                                                    string lsUrl = Model.ImageList[lnPI].ContentUrl;
+                                                    lnPI++;
+                                                    lnPIGroup++;
+
+                                                    <div data-index="@lnPI" data-image="@lsUrl" class="ussProductImageThumbContainer" style="background-image: url(@lsUrl); background-position: center center;">
+                                                        &nbsp;
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <!-- Controls -->
+                                <a class="left carousel-control col-xs-1" href="#udProductImageTab1Carousel" role="button" data-slide="prev">
+                                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="right carousel-control col-xs-1" href="#udProductImageTab1Carousel" role="button" data-slide="next">
+                                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                                
+                            </div>
+                            
+                        </div>
+
+                        <!--<div role="tabpanel" class="tab-pane" id="udProductMediaTab1">No videos yet.</div>-->
+                    </div>
+                </div>
+            }
+            else if (Model.ImageList.Count > 0)
+            {
+                <div id="udProductImageTabContent">
+                    <img id="udProductImage1" class="ussProductImage" src="@Model.ImageList[0].ContentUrl" />
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(Model.PrimaryImageId))
+            {
+                var loImage = new MaxFactry.Module.Catalog.PresentationLayer.MaxProductImageViewModel(Model.PrimaryImageId);
+                <div id="udProductImageTabContent">
+                    <img id="udProductImage1" class="ussProductImage" src="@loImage.ContentUrl" />
+                </div>
+            }
+        </div>
+        <div class="col-md-6">
+            <h1>@Model.Name</h1>
+
+            <div class="ussDescription">
+                <p>@Html.Raw(Html.MaxGetContentShortCode(Model.Description))</p>
+            </div>
+            @if (loList.Count < 3)
+            {
+                for (int lnD = 0; lnD < loList.Count; lnD++)
+                {
+                    <h3>@loList[lnD].Title</h3>
+                    <p>@Html.Raw(Html.MaxGetContentShortCode(loList[lnD].Description))</p>
+                }
+            }
+
+            <div class="ussPrice">
+                <label>Price</label>
+                    <p>@string.Format("{0:C}", Model.PriceBase)&nbsp;<span class="ussPerText">@Model.PerText</span></p>
+                @if (Model.PriceByQuantityList.Count > 0)
+                {
+                    bool lbHasQuantityPrice = false;
+                    for (int lnP = 0; lnP < Model.PriceByQuantityList.Count; lnP++)
+                    {
+                        if (Model.PriceByQuantityList[lnP].Start > 0 && Model.PriceByQuantityList[lnP].End > 0 && Model.PriceByQuantityList[lnP].Price > 0)
+                        {
+                            lbHasQuantityPrice = true;
+                        }
+                    }
+
+                    if (lbHasQuantityPrice)
+                    { 
+                        <label>Quantiry Pricing</label>
+                        <p>
+                        <table class="ussPriceByQuantityTable table-condensed table-bordered">
+                            <tr><th>Start</th><th>End</th><th>Price</th></tr>
+                            @for (int lnP = 0; lnP < Model.PriceByQuantityList.Count; lnP++)
+                            {
+                                if (Model.PriceByQuantityList[lnP].Price > 0)
+                                {
+                                    <tr>
+                                        <td class="text-right">@Model.PriceByQuantityList[lnP].Start</td>
+                                        <td class="text-right">@Model.PriceByQuantityList[lnP].End</td>
+                                        <td class="text-right">@string.Format("{0:C}", Model.PriceByQuantityList[lnP].Price)&nbsp;<span class="ussPerText">@Model.PerText</span></td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                        </p>
+                      }
+                   }
+                    
+            </div>
+            <div class="ussAddForm">
+                @using (Html.BeginForm(""))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary()
+                    <fieldset>
+                        @Html.HiddenFor(m => m.Id)
+                        <legend>Add To Cart</legend>
+                        @for (int lnO = 0; lnO < Model.OptionCombinationList.Count; lnO++)
+                        {
+                            for (int lnC = 0; lnC < Model.OptionCombinationList[lnO].OptionPerNameList.Count; lnC++)
+                            {
+                                var loOptionList = Model.GetOptionSelectListByName(Model.OptionCombinationList[lnO].OptionPerNameList[lnC].Name);
+                                var loSelectOne = new MaxFactry.Module.Catalog.BusinessLayer.MaxOptionByNameStructure();
+                                loSelectOne.DisplayText = "Select " + Model.OptionCombinationList[lnO].OptionPerNameList[lnC].Name;
+                                loSelectOne.Option = string.Empty;
+                                loOptionList.Insert(0, loSelectOne);
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-md-3 text-right">
+                                            @Html.Label(Model.OptionCombinationList[lnO].OptionPerNameList[lnC].Name)
+                                            @Html.HiddenFor(m => m.OptionCombinationList[lnO].OptionPerNameList[lnC].Name)
+                                        </div>
+                                        <div class="col-md-6">
+                                            @Html.DropDownListFor(m => m.OptionCombinationList[lnO].OptionPerNameList[lnC].Option, 
+                                            new SelectList(loOptionList, "Option", "DisplayText", Model.OptionCombinationList[lnO].OptionPerNameList[lnC].Option), 
+                                            new Dictionary<string, object> { { "class", "form-control ussOptionList" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-3 text-right">
+                                        <label for="uoQuantity">Quantity</label>
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.TextBoxFor(m => m.OptionCombinationList[lnO].Quantity, new Dictionary<string, object> { { "class", "form-control" }, { "type", "number" } })
+                                    </div>
+                                </div>
+                            </div>
+                        
+                        }
+                        <div class="col-md-offset-3 col-md-12">
+                            <button type="submit" name="uoProcess" value="cartadd" class="btn btn-primary ussAddButton">Add To Cart</button>
+                            @if (User.IsInRole("Admin - App"))
+                            {
+                                <a class="btn btn-warning" target="_blank" href="/MaxCatalogManage/ProductEdit/@Model.Id">Edit Product</a>
+                            }
+                        </div>
+                    </fieldset>
+                }
+            </div>
+
+        </div>
+    </div>
+
+        @if (loList.Count >= 3 && false)
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <div role="tabpanel">
+                        <ul class="nav nav-tabs" role="tablist" id="udProductDescriptionTab">
+                            @for (int lnD = 0; lnD < loList.Count; lnD++)
+                            {
+                                if (lnD == 0)
+                                {
+                                    <li class="active"><a href="#udProductDescriptionTab@(lnD)" aria-controls="udProductDescriptionTab@(lnD)" role="tab" data-toggle="tab">@Html.Raw(loList[lnD].Title)</a></li>
+                                }
+                                else
+                                {
+                                    <li><a href="#udProductDescriptionTab@(lnD)" aria-controls="udProductDescriptionTab@(lnD)" role="tab" data-toggle="tab">@Html.Raw(loList[lnD].Title)</a></li>
+                                }
+                            }
+                        </ul>
+                        <div class="tab-content">
+                            @for (int lnD = 0; lnD < Model.DescriptionList.Count; lnD++)
+                            {
+                                if (lnD == 0)
+                                {
+                                    <div role="tabpanel" class="tab-pane active" id="udProductDescriptionTab@(lnD)">@Html.Raw(Html.MaxGetContentShortCode(loList[lnD].Description))</div>
+                                }
+                                else
+                                {
+                                    <div role="tabpanel" class="tab-pane" id="udProductDescriptionTab@(lnD)">@Html.Raw(Html.MaxGetContentShortCode(loList[lnD].Description))</div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        
+        @if (loList.Count >= 3)
+        {
+        <div class="row">
+            <div class="col-md-12">
+                @for (int lnD = 0; lnD < loList.Count; lnD++)
+                {
+                    <hr />
+                    <h2><a name="#@loList[lnD].Title">@Html.Raw(loList[lnD].Title)</a></h2>
+                    <p>@Html.Raw(Html.MaxGetContentShortCode(loList[lnD].Description))</p>
+                }
+            </div>
+        </div>
+    }
+    
+</div>
+
+
+
+@section StyleSection {
+    <style type="text/css">
+        .ussProduct {
+            padding-bottom: 30px;
+        }
+
+            .ussProduct .ussLabel {
+                font-weight: bold;
+                padding-right: 10px;
+            }
+
+            .ussProduct .ussAmount {
+                padding-right: 10px;
+            }
+
+        .ussAddForm .ussQuantity {
+            width: 100px;
+        }
+
+        #udProductImageTabContent {
+            position: relative;
+            background-color: white;
+            border: 1px solid black;
+            display: table-cell;
+            vertical-align: middle;
+            overflow: hidden;
+        }
+
+            #udProductImageTabContent img {
+                margin-left: auto;
+                margin-right: auto;
+                display:block;
+            }
+
+        #udProductImageTabNavigation {
+            position: relative;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            color: white;
+            background-color: white;
+        }
+
+        .ussProductImageThumbContainer {
+            float: left;
+            width: 108px;
+            height: 108px;
+            display: table-cell;
+            overflow:hidden;
+            border: 1px solid black;
+            text-align: center;
+            background-size: cover;
+            margin-right: 7px;
+            background-repeat: no-repeat;
+        }
+
+        .ussProductImageThumbContainer img {
+            height: 108px;
+            display: block;
+                margin-left: auto;
+                margin-right: auto;
+        }
+
+
+
+                #udProductImageTabNavigation .carousel-control.right, #udProductImageTabNavigation .carousel-control.left {
+                    background-image: none;
+                    background-color: white;
+                    opacity: 1;
+                    border: 1px solid white;
+                }
+
+
+        @{
+            double lnHeight = 240;
+            double lnWidth = 320;
+            double lnSpace = 6;
+            double lnButtonWidth = 0.08;
+        }
+
+
+        @@media (min-width: 1px) {
+            #udProductImageTabContent {
+                height: @(lnHeight)px;
+                width: @(lnWidth)px;
+            }
+
+            #udProductImageTabContent img {
+                max-height: @(lnHeight - 2)px;
+                max-width: @(lnWidth - 2)px;
+            }
+
+            #udProductImageTabNavigation {
+                width: @(lnWidth)px;
+            }
+
+
+            #udProductImageTabNavigation .glyphicon-chevron-right,
+            #udProductImageTabNavigation .glyphicon-chevron-left {
+                top: 50%;
+            }
+
+            .ussProductImageThumbContainer {
+            width: @((int)((lnWidth - (lnButtonWidth * 2 * lnWidth) - (7 * lnSpace)) / 6))px;
+            height: @((int)(lnHeight * 0.166 ))px;
+            }
+
+            .ussProductImageThumbLeftNavigation
+            {
+                float: left;
+                width: @(lnButtonWidth * 100)%;
+                margin-right:@(lnSpace)px;
+            }
+
+            #udProductImageTabNavigation .carousel-control {
+                color: white;
+                width: @(lnButtonWidth * 100)%;
+            }
+        }
+
+        @{
+            lnHeight = 258;
+            lnWidth = 345;
+            lnSpace = 6;
+            lnButtonWidth = 0.08;
+        }
+
+        @@media (min-width: 768px) {
+            #udProductImageTabContent {
+                height: @(lnHeight)px;
+                width: @(lnWidth)px;
+            }
+
+            #udProductImageTabContent img {
+                max-height: @(lnHeight - 2)px;
+                max-width: @(lnWidth - 2)px;
+            }
+
+            #udProductImageTabNavigation {
+                width: @(lnWidth)px;
+            }
+
+
+            #udProductImageTabNavigation .glyphicon-chevron-right,
+            #udProductImageTabNavigation .glyphicon-chevron-left {
+                top: 50%;
+            }
+
+            .ussProductImageThumbContainer {
+            width: @((int)((lnWidth - (lnButtonWidth * 2 * lnWidth) - (7 * lnSpace)) / 6))px;
+            height: @((int)(lnHeight * 0.166 ))px;
+            }
+
+            .ussProductImageThumbLeftNavigation
+            {
+                float: left;
+                width: @(lnButtonWidth * 100)%;
+                margin-right:@(lnSpace)px;
+            }
+
+            #udProductImageTabNavigation .carousel-control {
+                color: white;
+                width: @(lnButtonWidth * 100)%;
+            }
+        }
+
+        @{
+            lnHeight = 340;
+            lnWidth = 455;
+            lnSpace = 6;
+            lnButtonWidth = 0.08;
+        }
+
+        @@media (min-width: 992px) {
+            #udProductImageTabContent {
+                height: @(lnHeight)px;
+                width: @(lnWidth)px;
+            }
+
+            #udProductImageTabContent img {
+                max-height: @(lnHeight - 2)px;
+                max-width: @(lnWidth - 2)px;
+            }
+
+            #udProductImageTabNavigation {
+                width: @(lnWidth)px;
+            }
+
+
+            #udProductImageTabNavigation .glyphicon-chevron-right,
+            #udProductImageTabNavigation .glyphicon-chevron-left {
+                top: 50%;
+            }
+
+            .ussProductImageThumbContainer {
+            width: @((int)((lnWidth - (lnButtonWidth * 2 * lnWidth) - (7 * lnSpace)) / 6))px;
+            height: @((int)(lnHeight * 0.166 ))px;
+            }
+
+            .ussProductImageThumbLeftNavigation
+            {
+                float: left;
+                width: @(lnButtonWidth * 100)%;
+                margin-right:@(lnSpace)px;
+            }
+
+            #udProductImageTabNavigation .carousel-control {
+                color: white;
+                width: @(lnButtonWidth * 100)%;
+            }
+        }
+
+        @{
+            lnHeight = 415;
+            lnWidth = 555;
+            lnSpace = 6;
+            lnButtonWidth = 0.08;
+        }
+
+        @@media (min-width: 1200px) {
+            #udProductImageTabContent {
+                height: @(lnHeight)px;
+                width: @(lnWidth)px;
+            }
+
+            #udProductImageTabContent img {
+                max-height: @(lnHeight - 2)px;
+                max-width: @(lnWidth - 2)px;
+            }
+
+            #udProductImageTabNavigation {
+                width: @(lnWidth)px;
+            }
+
+
+            #udProductImageTabNavigation .glyphicon-chevron-right,
+            #udProductImageTabNavigation .glyphicon-chevron-left {
+                top: 50%;
+            }
+
+            .ussProductImageThumbContainer {
+            width: @((int)((lnWidth - (lnButtonWidth * 2 * lnWidth) - (7 * lnSpace)) / 6))px;
+            height: @((int)(lnHeight * 0.166 ))px;
+            }
+
+            .ussProductImageThumbLeftNavigation
+            {
+                float: left;
+                width: @(lnButtonWidth * 100)%;
+                margin-right:@(lnSpace)px;
+            }
+
+            #udProductImageTabNavigation .carousel-control {
+                color: white;
+                width: @(lnButtonWidth * 100)%;
+            }
+        }
+
+
+
+    </style>
+}
+
+@section ScriptSection
+{
+
+    <script>
+        /*
+        $(function () {
+            $('#udProductDescriptionTab a:first').tab('show')
+        })
+        $('#udProductImageTab a').click(function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        })
+        */
+        $("#udProductImageTab1Carousel").on("click", function () {
+            $("#udProductImageTab1Carousel").carousel('pause');
+
+        });
+        $(".ussProductImageThumbContainer").on("click", function () {
+            $("#udProductImage1").attr("src", $(this).data("image"));
+            $(".ussProductImageThumbContainer").css("border", "1px solid black");
+            $(this).css("border", "3px solid black");
+        });
+
+        $('.ussAddButton').closest('form').submit(function (e) {
+            var form = this;
+            var lbIsAllOptionSelected = true;
+            $(".ussOptionList").each(function (index, value) {
+                if ($(this).val() == '')
+                {
+                    lbIsAllOptionSelected = false;
+                }
+            });
+
+            if (!lbIsAllOptionSelected)
+            {
+                e.preventDefault(); //Prevent the normal submission action
+                alert("Please select a value for every product option");
+            }
+        });
+
+        
+    </script>
+}

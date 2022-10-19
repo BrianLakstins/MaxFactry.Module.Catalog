@@ -1,0 +1,292 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel
+<ul class="list-inline">
+    <li>
+        @Html.ActionLink("Started Orders (" + Model.GetCount(MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterStarted) + ")", "Order", routeValues: new { Filter = MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterStarted }, htmlAttributes: new { Class = "btn btn-info" })
+    </li>
+    <li>
+        @Html.ActionLink("Pending Orders(" + Model.GetCount(MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterPending) + ")", "Order", routeValues: new { Filter = MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterPending }, htmlAttributes: new { Class = "btn btn-warning" })
+    </li>
+    <li>
+        @Html.ActionLink("Current Orders(" + Model.GetCount(MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterCurrent) + ")", "Order", routeValues: new { Filter = MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterCurrent }, htmlAttributes: new { Class = "btn btn-primary" })
+    </li>
+    <li>
+        @Html.ActionLink("Archived Orders", "Order", routeValues: new { Filter = MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterArchived }, htmlAttributes: new { Class = "btn btn-danger" })
+    </li>
+    <li>
+        @Html.ActionLink("Cancelled Orders", "Order", routeValues: new { Filter = MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterCancelled }, htmlAttributes: new { Class = "btn btn-default" })
+    </li>
+
+</ul>
+
+<div>@ViewBag.Message</div>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    if (!String.IsNullOrEmpty(Model.Id))
+    {
+        @Html.HiddenFor(m => m.Id)
+        <h2>Order @Model.AlternateId</h2>
+        if (!string.IsNullOrEmpty(Model.UserName))
+        {
+            <div>Placed by @Model.UserName</div>
+        }
+        <h2>Products</h2>
+        @Html.DisplayFor(m => m)
+
+        <div class="row">
+            <div class="col-lg-3 col-sm-4">
+                <h2>Order Contact</h2>
+                <person itemscope itemtype="http://schema.org/Person">
+                    <div itemprop="name">@Model.OrderContactPerson.CurrentFirstName @Model.OrderContactPerson.CurrentLastName</div>
+                    <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                        <div itemprop="streetAddress">@Model.OrderContactAddress.DeliveryAddress</div>
+                        <span itemprop="addressLocality">@Model.OrderContactAddress.City</span>, <span itemprop="addressRegion">@Model.OrderContactAddress.StateCode</span> <span itemprop="postalCode">@Model.OrderContactAddress.PostalCode</span><br />
+                    </div>
+                    Phone: <span itemprop="telephone"><a class="tel" href="tel:+@Model.OrderContactPerson.Phone">@Model.OrderContactPerson.Phone</a></span><br />
+                    Email: <span itemprop="email"><a class="email" href="email:+@Model.OrderContactPerson.Email">@Model.OrderContactPerson.Email</a></span><br />
+                    Email Signup?: <span>@Model.OrderContactPerson.EmailSignup</span><br />
+                    Note: <span>@Model.OrderContactPerson.Note</span><br />
+                </person>
+            </div>
+            <div class="col-lg-3 col-sm-4">
+                <h2>Shipping</h2>
+                @Html.DisplayFor(m => m.OrderShippingInfo)
+            </div>
+            <div class="col-lg-6 col-sm-12">
+                <h2>Payment</h2>
+                @for (int lnM = 0; lnM < Model.OrderPaymentList.Count; lnM++)
+                {
+                    if (Model.OrderPaymentList[lnM].OrderPaymentTransactionList.Count > 0)
+                    {
+                        @Html.DisplayFor(m => m.OrderPaymentList[lnM])
+                    }
+                }
+            </div>
+        </div>
+
+
+        if (Model.LogList.Count > 0)
+        {
+            <h2>Log</h2>
+            foreach (var loLog in Model.LogList)
+            {
+                <div class="row">
+                    <div class="col-sm-2">
+                        @loLog.LastUpdateDate
+                        @if (loLog.IsCustomerVisible)
+                        {
+                            <span>*</span>
+                        }
+                    </div>
+                    <div class="col-sm-10">
+                        @loLog.LogEntry
+                    </div>
+                </div>
+            }
+            <div class="row"><div class="col-sm-12"><i>Customer can see notes with * by date</i></div></div>
+        }
+        <h2>Updates</h2>
+        @Html.EditorFor(m => m.StatusChangeNote, additionalViewData: new { LabelColumnWidth = 1, AddOnEndControl = MvcHtmlString.Create("<button type='submit' name='uoProcess' value='StatusNote'>Just Add Note</button>") })
+        @Html.EditorFor(m => m.IsStatusChangeNoteVisibleToCustomer, additionalViewData: new { LabelColumnWidth = 1 })
+
+        if (MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusConfirmed <= Model.ProcessingStatus &&
+        Model.ProcessingStatus < MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusArchived)
+        {
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        @{
+            var loProcessingActionIndex = Model.ProcessingActionIndex;
+            foreach (short lnKey in loProcessingActionIndex.Keys)
+            {
+                if (Model.GetProcessingAction(lnKey))
+                {
+                    <button class="btn btn-default" type="submit" name="uoProcess" value="ActionUndo@(lnKey)" onclick="return (confirm('are you sure?'));">@loProcessingActionIndex[lnKey]</button>
+                }
+                else
+                {
+                    <button class="btn btn-warning" type="submit" name="uoProcess" value="Action@(lnKey)">@loProcessingActionIndex[lnKey]</button>
+                }
+            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        if (Model.ProcessingStatus <= MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusCancelled)
+        {
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <button class="btn btn-default" type="submit" name="uoProcess" value="Status@(MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusConfirmed)" onclick="return (confirm('are you sure?'));">Uncancel Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <button class="btn btn-danger" type="submit" name="uoProcess" value="Status-2" onclick="return (confirm('are you sure?'));">Delete Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusPending <= Model.ProcessingStatus &&
+        Model.ProcessingStatus < MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusConfirmed)
+        {
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <button class="btn btn-default btn-success" type="submit" name="uoProcess" value="Status@(MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusConfirmed)" onclick="return (confirm('are you sure?'));">Move to Current</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-12 text-right">
+                        <button class="btn btn-danger" type="submit" name="uoProcess" value="Status@(MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusCancelled)" onclick="return (confirm('are you sure?'));">Cancel Order</button>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusConfirmed <= Model.ProcessingStatus &&
+        Model.ProcessingStatus < MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusArchived)
+        {
+            if (!Model.ProcessingStatusText.StartsWith("Needs\r\n"))
+            {
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="input-group">
+                                <button class="btn btn-default btn-success" type="submit" name="uoProcess" value="Status@(MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusArchived)" onclick="return (confirm('are you sure?'));">Archive</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-12 text-right">
+                        <button class="btn btn-danger" type="submit" name="uoProcess" value="Status@(MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusCancelled)" onclick="return (confirm('are you sure?'));">Cancel Order</button>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusArchived <= Model.ProcessingStatus)
+        {
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <button class="btn btn-default" type="submit" name="uoProcess" value="Status@(MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusConfirmed)" onclick="return (confirm('are you sure?'));">Unarchive</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusStarted == Model.ProcessingStatus)
+        {
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <button class="btn btn-danger" type="submit" name="uoProcess" value="TakeOver" onclick="return (confirm('are you sure?'));">Take Over Order</button>
+                            <button class="btn btn-danger" type="submit" name="uoProcess" value="TakeOverCart" onclick="return (confirm('are you sure?'));">Take Over Order And Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        if (MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusStarted < Model.ProcessingStatus)
+        {
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <button class="btn btn-success" type="submit" name="uoProcess" value="ResendEmail" onclick="return (confirm('are you sure?'));">Resend Order Email</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+
+            @Html.EditorFor(m => m.UpdateSalesTax, additionalViewData: new { LabelColumnWidth = 1, PlaceHolder = "0.00", AddOnEndControl = MvcHtmlString.Create("<button type='submit' name='uoProcess' value='UpdateSalesTax'>Update</button>") })
+            <hr />
+
+            @Html.EditorFor(m => m.UpdateShipping, additionalViewData: new { LabelColumnWidth = 1, PlaceHolder = "0.00", AddOnEndControl = MvcHtmlString.Create("<button type='submit' name='uoProcess' value='UpdateShipping'>Update</button>") })
+        }
+
+    }
+}
+
+
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+
+}
+
+@section StyleSection {
+    <style>
+        .form-inline .form-group {
+            margin-left: 0;
+            margin-right: 0;
+        }
+    </style>
+
+    <style type="text/css">
+        #udOrder {
+            padding-bottom: 30px;
+        }
+
+            #udOrder .ussName {
+                padding-bottom: 5px;
+                font-weight: bold;
+                font-size: 110%;
+            }
+
+            #udOrder .ussLabel {
+                font-weight: bold;
+                padding-right: 10px;
+            }
+
+            #udOrder .ussQuantity {
+                width: 50px;
+            }
+
+            #udOrder .ussItemDivider {
+                margin-top: 2px;
+                margin-bottom: 2px;
+            }
+
+            #udOrder .ussItemPriceLabel {
+                padding-right: 10px;
+            }
+
+            #udOrder .ussItemImage {
+                width: 62px;
+            }
+
+            #udOrder .ussSku {
+                margin-right: 10px;
+            }
+
+            #udOrder .ussOption {
+                margin-right: 10px;
+            }
+    </style>
+}

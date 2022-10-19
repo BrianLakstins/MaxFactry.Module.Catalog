@@ -1,0 +1,31 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxCategoryViewModel
+
+@{   
+    List<IHtmlString> loCategoryList = new List<IHtmlString>();
+    var loList = Model.GetSortedList();
+    for (int lnP = 0; lnP < loList.Count; lnP++)
+    {
+        string lsNameLink = Html.ActionLink(loList[lnP].Name, "Category", "MaxCatalog", routeValues: new { id = loList[lnP].Id }, htmlAttributes: new { Class = "ussCategoryInCategoryLink" }).ToString();
+        string lsR = "<div class='ussCategoryListContainer'>";
+        string lsUrl = Url.Action("Category", "MaxCatalog", routeValues: new { id = loList[lnP].Id });
+        bool lbImage = false;
+        if (!string.IsNullOrEmpty(loList[lnP].PrimaryImageId))
+        {
+            var loImage = new MaxFactry.Module.Catalog.PresentationLayer.MaxProductImageViewModel(loList[lnP].PrimaryImageId);
+            
+            lsR += "<a href='" + lsUrl + "'><img class='ussCategoryListImage' src='" + loImage.ContentUrl + "' /></a>";
+            lbImage = true;
+        }
+
+        if (!lbImage)
+        {
+            lsR += "<div class='ussCategoryListName'><a href='" + lsUrl + "'>" + loList[lnP].Name + "</a></div>";
+        }
+
+        lsR += "</div>";
+
+        loCategoryList.Add(MvcHtmlString.Create(lsR));
+    }   
+
+    @Html.MaxGrid(loCategoryList, 4)
+}

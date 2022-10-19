@@ -1,0 +1,184 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxCategoryViewModel
+
+<div>@ViewBag.Message</div>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    if (!String.IsNullOrEmpty(Model.Id))
+    {
+        <fieldset>
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.CatalogId)
+            <legend>Edit Category</legend>
+            @Html.DisplayFor(m => m.Id, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.ParentId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.ParentId, new SelectList(Model.ParentList, "Id", "PathText", Model.ParentId), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.RelationOrder, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.PrimaryImageId, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.DropDownListFor(m => m.PrimaryImageId, new SelectList(Model.ImageList, "Id", "Name", Model.PrimaryImageId), new Dictionary<string, object> { { "class", "form-control" } }) })
+            @Html.EditorFor(m => m.Active, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-4">
+                        <div class="input-group">
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDelete" onclick="return (confirm('are you sure?'));" class="btn btn-danger">Delete</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDone" class="btn btn-default">Done</button>
+                            <button type="submit" name="uoProcess" value="@MaxManageController.ProcessSave" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    }
+
+}
+
+@using (Html.BeginForm("CategoryImage", "MaxCatalogManage", FormMethod.Post, new Dictionary<string, object> { { "role", "form" }, { "class", "form-horizontal" }, { "enctype", "multipart/form-data" } }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <fieldset>
+        <legend>Category Images</legend>
+        @Html.HiddenFor(m => m.Id)
+        <div class="row">
+            <div class="form-group">
+                <label for="laFile" class="control-label col-md-2">Choose one or more images to add to category.</label>
+                <div class="input-group">
+                    <div class="col-md-10">
+                        <input type="file" name="laFile" multiple="multiple" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCreate" class="btn btn-primary">Upload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (null != ViewBag.LogInfo)
+        {
+            <div class="row">
+                <div class="col-sm-12">
+                    <pre>@Html.Raw(ViewBag.LogInfo)</pre>
+                </div>
+            </div>
+        }
+        @if (Model.ImageList.Count > 0)
+        {
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table-bordered table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Upload Name</th>
+                                <th>Name</th>
+                                <th>Content Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var loView in Model.ImageList)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.ActionLink("Edit", "CategoryImageEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loView.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })
+
+                                    </td>
+                                    <td>@loView.FileName</td>
+                                    <td>@loView.Name</td>
+                                    <td>
+                                        @if (loView.ContentUrl.Length > 0)
+                                        {
+                                            <a href="@loView.ContentUrl" target="_blank">View Image</a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        
+        @{
+        MaxFactry.Module.Catalog.PresentationLayer.MaxProductViewModel loProduct = new MaxFactry.Module.Catalog.PresentationLayer.MaxProductViewModel();
+        var loList = loProduct.GetSearchCategoryList(Model.Id);
+        if (loList.Count > 0)
+        {
+            <div class="row">
+                <table class="table-bordered table-condensed">
+                    <thead>
+                        <tr>
+                            <th>Active?</th>
+                            <th>Action</th>
+                            <th>Main Image</th>
+                            <th>SKU</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var loModel in loList)
+                        {
+                            <tr>
+                                <td>@loModel.Active</td>
+                                <td>
+                                    @Html.ActionLink("Edit", "ProductEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+                                    @Html.ActionLink("View", "Product", "MaxCatalog", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+
+                                </td>
+                                <td>
+                                    @{
+                            string lsImage = string.Empty;
+                            if (null != loModel.PrimaryImageId)
+                            {
+                                var loImage = new MaxFactry.Module.Catalog.PresentationLayer.MaxProductImageViewModel(loModel.PrimaryImageId);
+                                lsImage = "<img src='" + loImage.ContentUrl + "' style='max-height:100px; max-width:100px;' />";
+                            }
+                                    }
+                                    @Html.Raw(lsImage)
+                                </td>
+                                <td>@loModel.Sku</td>
+                                <td>
+                                    <strong>@loModel.Name</strong> (@loModel.BranchType)<br />
+                                    @if (null != loModel.ParentId)
+                                    {
+                                        @Html.ActionLink("Edit Parent", "ProductEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.ParentId } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+                                        @Html.ActionLink("View Parent", "Product", "MaxCatalog", new RouteValueDictionary { { "id", loModel.ParentId } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+                                    }
+                                    else
+                                    {
+                                        @Html.ActionLink("Create Branch", "ProductBranch", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" }, { "target", "_blank" } })
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        }
+    </fieldset>
+}
+
+
+
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+            $("input[name='laFile']").change(function () {
+                $(".btn-primary").attr('disabled', false);
+            });
+        });
+    </script>
+
+}

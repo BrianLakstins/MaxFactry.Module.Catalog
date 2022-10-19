@@ -1,0 +1,197 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxCartViewModel
+@{
+    Html.MaxIncludeClientTool("Bootstrap");
+    string lsContinueShoppingLink = "/";
+    var loCatalog = new MaxFactry.Module.Catalog.PresentationLayer.MaxCatalogViewModel();
+    if (loCatalog.LoadCurrent())
+    {
+        lsContinueShoppingLink = "/MaxCatalog/Catalog/" + loCatalog.Id;
+    }
+
+    string lsStorageKey = MaxFactry.Base.DataLayer.MaxDataLibrary.GetStorageKey(null);
+    if (lsStorageKey == "037a5df8-9d2c-4d9b-ac57-b3a27490a794")
+    {
+        lsContinueShoppingLink = "https://tractortoolsdirect.com/showroom/";
+    }
+}
+@if (User.IsInRole("Admin - App"))
+{
+    <div class="row">
+        <div class="col-sm-12 bg-info">
+            <ul class="list-inline">
+                <li>@Html.ActionLink("New Cart", "Cart", "MaxCatalog", routeValues: new { id = "new" }, htmlAttributes: new { Class = "btn btn-xs btn-warning" })</li>
+                <li>Logged in as Admin user @User.Identity.Name</li>
+            </ul>
+        </div>
+    </div>
+}
+@using (Html.BeginForm())
+{
+    if (Model.ItemList.Count > 0)
+    {
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6"></div>
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-right">
+                <a class="btn btn-default btn-large" href="@lsContinueShoppingLink" target="_top">Continue Shopping</a>
+                @if (Model.CanPlaceOrder())
+                {
+                    <button type="submit" name="uoProcess" value="PlaceOrder" class="btn btn-success btn-large">Place Order</button>
+                }
+                else
+                {
+                    <div class="bg-danger">@Model.GetCanPlaceOrderMessage()</div>
+                }
+            </div>
+        </div>
+    }
+
+    <h3 class="text-center">Cart</h3>
+    @Html.EditorForModel()
+
+    if (Model.ItemList.Count > 0)
+    {
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6"></div>
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-right">
+                <a class="btn btn-default btn-large" href="@lsContinueShoppingLink" target="_top">Continue Shopping</a>
+                @if (Model.CanPlaceOrder())
+                {
+                    <button type="submit" name="uoProcess" value="PlaceOrder" class="btn btn-success btn-large">Place Order</button>
+                }
+                else
+                {
+                    <div class="bg-danger">@Model.GetCanPlaceOrderMessage()</div>
+                }
+            </div>
+        </div>
+    }
+
+    if (User.IsInRole("Admin - App"))
+    {
+        <fieldset>
+            <legend>Add Custom Product</legend>
+            @Html.EditorFor(m => m.CartItemNew.Name, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Product Name" })
+            @Html.EditorFor(m => m.CartItemNew.Sku, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Sku" })
+            @Html.EditorFor(m => m.CartItemNew.ItemPrice, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Price" })
+            @Html.EditorFor(m => m.CartItemNew.ItemShipping, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Commercial Shipping" })
+            @Html.EditorFor(m => m.CartItemNew.Quantity, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Quantity", InputType = "number" })
+            @Html.EditorFor(m => m.CartItemNew.Note, additionalViewData: new { LabelColumnWidth = 2, LabelText = "Note" })
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="input-group">
+                            <button type="submit" name="uoProcess" value="Add" class="btn btn-success btn-large">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    }
+}
+
+@section StyleSection {
+    <style type="text/css">
+        .ussCart {
+            padding-bottom: 30px;
+        }
+
+            .ussCart .ussName {
+                padding-bottom: 5px;
+                font-weight: bold;
+                font-size: 110%;
+            }
+
+            .ussCart .ussLabel {
+                font-weight: bold;
+                padding-right: 10px;
+            }
+
+            .ussCart .ussQuantity {
+                width: 50px;
+                padding-left: 0px;
+                padding-right: 0px;
+            }
+
+            .ussCart .ussItemDivider {
+                margin-top: 2px;
+                margin-bottom: 2px;
+            }
+
+            .ussCart .ussItemPriceLabel {
+                padding-right: 10px;
+            }
+
+            .ussCart .ussSku {
+                margin-right: 10px;
+            }
+
+            .ussCart .ussOption {
+                margin-right: 10px;
+            }
+
+            .ussCart .ussItemTotalLabel {
+                padding-right: 10px;
+            }
+
+            .ussCart .ussItemPriceLabel {
+                padding-right: 10px;
+            }
+    </style>
+}
+
+@section ScriptSection
+{
+    <script>
+        function pfShowWaitDialog() {
+            $('#pleaseWaitDialog').modal({ keyboard: false });
+        }
+
+        function pfPreventEnterKey(loEvent) {
+            var loEvent = (loEvent) ? loEvent : ((event) ? event : null);
+            var loNode = (loEvent.target) ? loEvent.target : ((loEvent.srcElement) ? loEvent.srcElement : null);
+            if ((loEvent.keyCode == 13) && (loNode.type == "text")) { return false; }
+        }
+
+        $('button:submit').click(function () {
+            pfShowWaitDialog();
+        });
+
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+            $('#udOrderForm input').on("keypress", function (e) {
+                if (e.keyCode == 13) {
+                    return false;
+                }
+            });
+
+            $("input[name='ShippingType']").on("change", function (e) {
+                $('#udSaveShippingButton').click();
+            });
+
+            $("input[name='uoTaxLocation']").on("change", function (e) {
+                $('#udSaveTaxLocationButton').click();
+            });
+
+            $("input[name='uoTaxOverride']").on("change", function (e) {
+                $('#udSaveTaxLocationButton').click();
+            });
+
+            $('#udSaveShippingButton').hide();
+            $('#udSaveTaxLocationButton').hide();
+        });
+
+    </script>
+}
+
+<div class="modal fade" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h1>Processing...</h1></div>
+            <div class="modal-body">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

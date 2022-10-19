@@ -1,0 +1,160 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel
+
+<h1>Order Management - @Model.Filter</h1>
+<ul class="list-inline">
+    <li>
+        @Html.ActionLink("Started Orders (" + Model.GetCount(MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterStarted) + ")", "Order", routeValues: new { Filter = MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterStarted }, htmlAttributes: new { Class = "btn btn-info" })
+    </li>
+    <li>
+        @Html.ActionLink("Pending Orders(" + Model.GetCount(MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterPending) + ")", "Order", routeValues: new { Filter = MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterPending }, htmlAttributes: new { Class = "btn btn-warning" })
+    </li>
+    <li>
+        @Html.ActionLink("Current Orders(" + Model.GetCount(MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterCurrent) + ")", "Order", routeValues: new { Filter = MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterCurrent }, htmlAttributes: new { Class = "btn btn-primary" })
+    </li>
+    <li>
+        @Html.ActionLink("Archived Orders", "Order", routeValues: new { Filter = MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterArchived }, htmlAttributes: new { Class = "btn btn-danger" })
+    </li>
+    <li>
+        @Html.ActionLink("Canceled Orders", "Order", routeValues: new { Filter = MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterCancelled }, htmlAttributes: new { Class = "btn btn-default" })
+    </li>
+
+</ul>
+
+@{
+    var loList = Model.GetSortedListByStatusFilter();
+
+    if (loList.Count > 0)
+    {
+        <table class="table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Order Id</th>
+                    <th>
+                        @if (!MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterStarted.Equals(Model.Filter))
+                        {
+                            <text>Order Date</text>
+                        }
+                        else
+                        {
+                            <text>Last Update</text>
+                        }
+
+                    </th>
+                    <th>Contact</th>
+                    <th class="text-right">Item Count</th>
+                    <th class="text-right">Item Total</th>
+                    <th class="text-right">Total</th>
+                    <th colspan="2">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var loModel in loList)
+                {
+                    <tr>
+                        <td style="border-top-width: 2px; color:black;">@Html.Raw(loModel.ProcessingStatusText.Replace("\r\n", "<br />"))</td>
+                        <td style="border-top-width: 2px; color:black;">@loModel.AlternateId</td>
+                        <td style="border-top-width: 2px; color:black;">
+                            @if (loModel.ProcessingStatus >= MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusPending ||
+                        loModel.ProcessingStatus <= MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusCancelled)
+                            {
+                                <text>@loModel.OrderPlacedDate</text>
+                            }
+                            else
+                            {
+                                <text>@loModel.LastUpdateDate</text>
+                            }
+                        </td>
+                        <td style="border-top-width: 2px; color:black;">@loModel.OrderContactPerson.CurrentFirstName @loModel.OrderContactPerson.CurrentLastName</td>
+                        <td style="border-top-width: 2px; color:black;" class="text-right">@loModel.ItemCount</td>
+                        <td style="border-top-width: 2px; color:black;" class="text-right">@loModel.ItemTotal</td>
+                        <td style="border-top-width: 2px; color:black;" class="text-right">@string.Format("{0:C}", loModel.Total)</td>
+                        <td style="border-top-width: 2px; color:black;">
+
+                            @Html.ActionLink("Details", "OrderEdit", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })
+                        </td>
+                        <td style="border-top-width: 2px; color:black;">
+                            @if (MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusPending <= loModel.ProcessingStatus &&
+                        loModel.ProcessingStatus < MaxFactry.Module.Catalog.BusinessLayer.MaxOrderEntity.ProcessingStatusArchived && false)
+                            {
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <div class="input-group">
+                                                @{
+                                                    var lbFirst = false;
+                                                    foreach (int lnKey in loModel.ProcessingStatusIndex.Keys)
+                                                    {
+                                                        if (lnKey > 500)
+                                                        {
+                                                            if (lnKey <= loModel.ProcessingStatus)
+                                                            {
+                                                            }
+                                                            else if (lbFirst)
+                                                            {
+                                                            }
+                                                            else
+                                                            {
+                                                                lbFirst = true;
+                                                                @Html.ActionLink(loModel.ProcessingStatusIndex[lnKey], "OrderChangeStatus", "MaxCatalogManage", new RouteValueDictionary { { "id", loModel.Id }, { "status", lnKey.ToString() } }, new Dictionary<string, object> { { "class", "btn btn-success" } })
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                                    }
+                        </td>
+                    </tr>
+                                                    foreach (var loItem in loModel.ItemList)
+                                                    {
+                                                        <tr>
+                                                            <td colspan="9">
+                                                                <div class="ussName">
+                                                                    @if (!string.IsNullOrEmpty(loItem.ItemUrl))
+                                                                    {
+                                                                        <a href="@loItem.ItemUrl" target="_top">@loItem.Name</a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @loItem.Name
+                                                                    }
+                                                                </div>
+                                                                <div class="ussDescription">
+                                                                    <div><span class="ussSkuLabel">SKU: </span><span class="ussSku">@loItem.Sku</span></div>
+                                                                    @for (int lnO = 0; lnO < loItem.OptionList.Count; lnO++)
+                                                                    {
+                                                                        <div>
+                                                                            <span class="ussOptionLabel">@loItem.OptionList[lnO].Name: </span><span class="ussOption">@loItem.OptionList[lnO].Option</span>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        }
+                                                    }
+            </tbody>
+        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>No orders match.</div>
+                                                    }
+                                                    if (MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel.FilterArchived.Equals(Model.Filter))
+                                                    {
+                                                        <h3>Item totals for current and archived orders</h3>
+                                                        <div>Last Month Internal: @String.Format("{0:C}", Model.GetMonthTotalLastInternal())</div>
+                                                        <div>Last Month External: @String.Format("{0:C}", Model.GetMonthTotalLastExternal())</div>
+                                                        <div>This Month: @String.Format("{0:C}", Model.GetMonthTotalThis())</div>
+                                                    }
+}
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+        });
+    </script>
+}

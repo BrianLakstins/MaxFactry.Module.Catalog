@@ -1,0 +1,126 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxCartViewModel
+@if (Model.ItemList.Count == 0)
+{
+    <div class="ussCart" id="udCartEmpty">
+        <div class="col-xs-12 text-center">Item Total (0 items): $0.00</div>
+        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-9">Items</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right">Price</div>
+        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-3 text-center">Qty</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right">Total</div>
+
+            <div class="clearfix"></div>
+            <hr class="ussItemDivider" />
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3">
+                <img class="ussItemImage" src="//az851879.vo.msecnd.net/ct/MaxCart/CartImage.gif" alt="Empty Cart Item">
+            </div>
+            <div class="col-lg-5 col-md-5 col-sm-5 col-xs-6">
+                <div class="ussName">The Cart is currently empty</div>
+                <div class="ussDescription">
+
+                </div>
+                <div class="visible-xs"><span class="ussItemPriceLabel">Price:</span><span class="ussItemPrice">$0.00</span></div>
+                <div class="visible-xs"><span class="ussItemTotalLabel">Total:</span><span class="ussItemTotal">$0.00</span></div>
+
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 hidden-xs text-right"><span class="ussItemPrice">$0.00</span></div>
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-3 text-center">
+                <div class="text-center">0</div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right"><span class="ussItemTotal">$0.00</span></div>
+        
+
+
+        <div class="clearfix"></div>
+        <hr class="ussItemDivider" />
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3">
+            &nbsp;
+        </div>
+        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+            <div class="ussName">Shipping</div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 text-right"><span class="ussItemTotal">@Model.ShippingTotal</span></div>
+
+        <div class="clearfix"></div>
+        <hr class="ussItemDivider" />
+        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-9 text-right">Tax</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 text-right">@Model.TaxTotal</div>
+
+        <div class="clearfix"></div>
+        <hr class="ussItemDivider" />
+        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-9 text-right">Total</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 text-right">@Model.Total</div>
+    </div>
+}
+else
+{
+    <div class="ussCart" id="udCart">
+        <div class="col-xs-12 text-center">Item Total (@Model.ItemList.Count items): @Model.ItemTotal</div>
+        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-9">Items</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right">Price</div>
+        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-3 text-center">Qty</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right">Total</div>
+
+        @foreach (var loItemView in Model.ItemList)
+        {
+            <div class="clearfix"></div>
+            <hr class="ussItemDivider" />
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3">
+                @if (!string.IsNullOrEmpty(loItemView.ImageUrl))
+                {
+                    <img class="ussItemImage" src="@loItemView.ImageUrl" alt="@loItemView.Name">
+                }
+                else
+                {
+                    <img class="ussItemImage" src="//az851879.vo.msecnd.net/ct/MaxCart/CartImage.gif" alt="@loItemView.Name">
+                }
+            </div>
+            <div class="col-lg-5 col-md-5 col-sm-5 col-xs-6">
+                <div class="ussName">@loItemView.Name</div>
+                <div class="ussDescription">
+                    <div><span class="ussSkuLabel">SKU: </span><span class="ussSku">@loItemView.Sku</span></div>
+                    @for (int lnO = 0; lnO < loItemView.OptionList.Count; lnO++)
+                    {
+                        <div>
+                            <span class="ussOptionLabel">@loItemView.OptionList[lnO].Name: </span><span class="ussOption">@loItemView.OptionList[lnO].Option</span>
+                        </div>
+                    }
+                </div>
+                <div class="visible-xs"><span class="ussItemPriceLabel">Price:</span><span class="ussItemPrice">@loItemView.ItemPrice</span></div>
+                <div class="visible-xs"><span class="ussItemTotalLabel">Total:</span><span class="ussItemTotal">@loItemView.ItemTotal</span></div>
+
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 hidden-xs text-right"><span class="ussItemPrice">@loItemView.ItemPrice</span></div>
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-3 text-center">
+                <div class="text-right">@loItemView.Quantity</div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right"><span class="ussItemTotal">@loItemView.ItemTotal</span></div>
+        }
+
+
+        <div class="clearfix"></div>
+        <hr class="ussItemDivider" />
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3">
+            &nbsp;
+        </div>
+        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+            <div class="ussName">Shipping</div>
+            <div class="ussDescription">
+                <ul class="list-unstyled">
+                    <li>@Model.ShippingTypeEntity.ShippingType</li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 text-right"><span class="ussItemTotal">@Model.ShippingTotal</span></div>
+
+        <div class="clearfix"></div>
+        <hr class="ussItemDivider" />
+        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-9 text-right">Tax</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 text-right">@string.Format("{0:C}", Model.TaxTotal)</div>
+
+        <div class="clearfix"></div>
+        <hr class="ussItemDivider" />
+        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-9 text-right">Total</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 text-right">@Model.Total</div>
+    </div>
+}

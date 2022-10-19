@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "Home Page - ";
+    ViewBag.MetaKeywords = "template, original, start";
+    ViewBag.MetaDescription = "Home page template for Mvc4 Web Application based on MaxFactry.";
+    
+}
+
+
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Client", "Client", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udLogClientNavLink", target = "_blank" })</li>
+                    <li>@Html.ActionLink("Catalog", "Catalog", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udCatalogNavLink", target = "_blank" })</li>
+                    <li>@Html.ActionLink("Category", "Category", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udCategoryNavLink", target = "_blank" })</li>
+                    <li>@Html.ActionLink("Manufacturer", "Manufacturer", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udManufacturerNavLink", target = "_blank" })</li>
+                    <li>@Html.ActionLink("Vendor", "Vendor", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udVendorNavLink", target = "_blank" })</li>
+                    <li>@Html.ActionLink("Product", "Product", "MaxCatalogManage", routeValues: null, htmlAttributes: new { id = "udProductNavLink", target = "_blank" })</li>
+                    <li>@Html.ActionLink("Search", "ProductSearch", "MaxCatalog", routeValues: null, htmlAttributes: new { id = "udProductNavLink", target = "_blank" })</li>
+                </ul>
+
+        

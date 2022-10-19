@@ -1,0 +1,172 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxCategoryViewModel
+@{
+    Html.MaxIncludeClientTool("JQuery-Plugin-Lazyload");
+}
+<h1>@Model.Name</h1>
+
+@{
+    var loList = Model.GetChildList(null);
+    List<IHtmlString> loCategoryList = new List<IHtmlString>();
+    foreach (var loModel in loList)
+    {
+        if (loModel.IsActive && loModel.Catalog.IsActive)
+        {
+            int lnChildCount = 0;
+            var loChildList = loModel.GetChildList(null);
+            foreach (var loChildModel in loChildList)
+            {
+                if (loChildModel.IsActive)
+                {
+                    lnChildCount++;
+                }
+            }
+
+            string lsName = loModel.Name;
+            if (lnChildCount > 0)
+            {
+                lsName = lsName + "(" + lnChildCount.ToString() + ")";
+
+                string lsNameLink = Html.ActionLink(lsName, "Category", "MaxCatalog", routeValues: new { id = loModel.Id }, htmlAttributes: new { Class = "ussCategoryInCategoryLink" }).ToString();
+                string lsImage = string.Empty;
+                if (!string.IsNullOrEmpty(loModel.PrimaryImageId))
+                {
+                    var loImage = new MaxFactry.Module.Catalog.PresentationLayer.MaxCategoryImageViewModel(loModel.PrimaryImageId);
+                    lsImage = "<div class='ussCategoryListImageContainer'><a href='" + Url.Action("Category", "MaxCatalog", routeValues: new { id = loModel.Id }) + "'><img class='ussCategoryListImage ussLazyLoad' data-original='" + loImage.ContentUrl + "' /></a></div>";
+                }
+
+                string lsR = "<div class='ussCategoryListItem text-center'>" + lsImage + "<div class='ussCategoryNameLinkContainer'>" + lsNameLink + "</div></div>";
+                loCategoryList.Add(MvcHtmlString.Create(lsR));
+            }
+        }
+    }
+}
+
+@if (loCategoryList.Count > 0)
+{
+    <h2>Sub Categories</h2>
+    @Html.MaxGrid(loCategoryList, 4)
+}
+
+@{
+    List<IHtmlString> loProductList = new List<IHtmlString>();
+
+    MaxFactry.Module.Catalog.PresentationLayer.MaxProductViewModel loProduct = new MaxFactry.Module.Catalog.PresentationLayer.MaxProductViewModel();
+    var loProductModelList = loProduct.GetSearchCategoryList(Model.Id);
+    foreach (var loProductModel in loProductModelList)
+    {
+        //// TODO: Add checking to see if catalog is active too.
+        if (loProductModel.IsActive || User.IsInRole("Admin - App"))
+        {
+            string lsProductNameLink = Html.ActionLink(loProductModel.Name, "Product", "MaxCatalog", routeValues: new { id = loProductModel.Id }, htmlAttributes: new { Class = "ussProductInCategoryLink" }).ToString();
+            string lsImage = string.Empty;
+            if (!string.IsNullOrEmpty(loProductModel.PrimaryImageId))
+            {
+                var loImage = new MaxFactry.Module.Catalog.PresentationLayer.MaxProductImageViewModel(loProductModel.PrimaryImageId);
+                lsImage = "<div class='ussProductListImageContainer'><a href='" + Url.Action("Product", "MaxCatalog", routeValues: new { id = loProductModel.Id }) + "'><img class='ussProductListImage ussLazyLoad' data-original='" + loImage.ContentUrl + "' /></a></div>";
+            }
+
+            string lsR = "<div class='ussProductListItem text-center'>" + lsImage + "<div class='ussProductSkuContainer'>SKU: " + loProductModel.Sku + "</div><div class='ussProductNameLinkContainer'>" + lsProductNameLink + "</div><div class='ussProductPriceContainer'>Price: " + string.Format("{0:C}", loProductModel.PriceBase) + "</div></div>";
+            if (!loProductModel.IsActive)
+            {
+                lsR += "<div class='bg-warning'>Inactive</div>";
+            }
+            
+            loProductList.Add(MvcHtmlString.Create(lsR));
+        }
+    }
+}
+
+@if (loProductList.Count > 0)
+{
+    <h2>Products</h2>
+    @Html.MaxGrid(loProductList, 4)
+}
+
+@foreach (var loModel in loList)
+{
+    if (loModel.IsActive && loModel.Catalog.IsActive)
+    {
+        loProduct = new MaxFactry.Module.Catalog.PresentationLayer.MaxProductViewModel();
+        loProductModelList = loProduct.GetSearchCategoryList(loModel.Id);
+        loProductList = new List<IHtmlString>();
+        foreach (var loProductModel in loProductModelList)
+        {
+            //// TODO: Add checking to see if catalog is active too.
+            if (loProductModel.IsActive || User.IsInRole("Admin - App"))
+            {
+                string lsProductNameLink = Html.ActionLink(loProductModel.Name, "Product", "MaxCatalog", routeValues: new { id = loProductModel.Id }, htmlAttributes: new { Class = "ussProductInCategoryLink" }).ToString();
+                string lsImage = string.Empty;
+                if (!string.IsNullOrEmpty(loProductModel.PrimaryImageId))
+                {
+                    var loImage = new MaxFactry.Module.Catalog.PresentationLayer.MaxProductImageViewModel(loProductModel.PrimaryImageId);
+                    lsImage = "<div class='ussProductListImageContainer'><a href='" + Url.Action("Product", "MaxCatalog", routeValues: new { id = loProductModel.Id }) + "'><img class='ussProductListImage ussLazyLoad' data-original='" + loImage.ContentUrl + "' /></a></div>";
+                }
+
+                string lsR = "<div class='ussProductListItem text-center'>" + lsImage + "<div class='ussProductSkuContainer'>SKU: " + loProductModel.Sku + "</div><div class='ussProductNameLinkContainer'>" + lsProductNameLink + "</div><div class='ussProductPriceContainer'>Price: " + string.Format("{0:C}", loProductModel.PriceBase) + "</div></div>";
+                if (!loProductModel.IsActive)
+                {
+                    lsR += "<div class='bg-warning'>Inactive</div>";
+                }
+                
+                loProductList.Add(MvcHtmlString.Create(lsR));
+            }
+        }
+
+        if (loProductList.Count > 0)
+        {
+            <h2>@loModel.Name</h2>
+            @Html.MaxGrid(loProductList, 4)
+        }
+    }
+}
+@section StyleSection {
+
+<style>
+    .ussProductListImage {
+        width: 200px;
+        border: 1px solid black;
+    }
+
+    .ussProductListImageContainer {
+        margin-bottom: 3px;
+    }
+
+    .ussProductInCategoryLink {
+        text-decoration: none;
+    }
+
+    .ussCategoryListImage {
+        width: 200px;
+        border: 1px solid black;
+    }
+
+    .ussCategoryListImageContainer {
+        margin-bottom: 3px;
+    }
+
+    .ussCategoryInCategoryLink {
+        text-decoration: none;
+    }
+
+    .ussCategoryListItem
+    {
+
+    }
+
+    .ussProductListItem
+    {
+
+    }
+</style>
+
+    }
+
+@section ScriptSection
+{
+
+    <script type="text/javascript">
+        jQuery(function () {
+            jQuery("img.ussLazyLoad").lazyload();
+        });
+    </script>
+}

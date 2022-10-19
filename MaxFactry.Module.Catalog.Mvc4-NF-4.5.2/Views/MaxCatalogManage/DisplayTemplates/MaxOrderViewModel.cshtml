@@ -1,0 +1,173 @@
+﻿@model MaxFactry.Module.Catalog.PresentationLayer.MaxOrderViewModel
+
+<div class="ussOrder" id="udOrder">
+    @{
+        var lbHasItemDiscount = false;
+        var lnItemColumnWidth = 7;
+        for (int lnCI = 0; lnCI < Model.ItemList.Count; lnCI++)
+        {
+            if (Model.ItemList[lnCI].DiscountAmount > 0)
+            {
+                lbHasItemDiscount = true;
+                lnItemColumnWidth = 5;
+            }
+        }
+    }
+    <div class="row">
+        <div class="col-xs-12 text-center">Item Total (@Model.ItemList.Count items): @Model.ItemTotal</div>
+    </div>
+    <div class="row">
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 text-center"></div>
+        <div class="col-sm-10 col-xs-9">
+            <div class="row">
+                <div class="col-sm-@lnItemColumnWidth col-xs-9">Items</div>
+                <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right">Price</div>
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-3 text-center">Qty</div>
+                @if (lbHasItemDiscount)
+                {
+                    <div class="col-sm-2 hidden-xs text-right"><strong>Discount</strong></div>
+                }
+                <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right">Total</div>
+            </div>
+        </div>
+    </div>
+    @foreach (var loItemView in Model.ItemList)
+    {
+        <div class="row">
+            <hr class="ussItemDivider" />
+            <div class="col-sm-2 col-xs-3">
+                @if (!string.IsNullOrEmpty(loItemView.ImageUrl))
+                {
+                    <img class="ussItemImage" src="@loItemView.ImageUrl" alt="@loItemView.Name">
+                }
+                else
+                {
+                    <img class="ussItemImage" src="//s.dns9.co/ct/MaxCart/CartImage.gif" alt="@loItemView.Name">
+                }
+            </div>
+            <div class="col-sm-10 col-xs-9">
+                <div class="row">
+                    <div class="col-sm-@lnItemColumnWidth col-xs-6">
+                        <div class="ussName">@loItemView.Name</div>
+                        <div class="ussDescription">
+                            <div><span class="ussSkuLabel">SKU: </span><span class="ussSku">@loItemView.Sku</span></div>
+                            @for (int lnO = 0; lnO < loItemView.OptionList.Count; lnO++)
+                            {
+                                <div>
+                                    <span class="ussOptionLabel">@loItemView.OptionList[lnO].Name: </span><span class="ussOption">@loItemView.OptionList[lnO].Option</span>
+                                </div>
+                            }
+
+                            @if (User.IsInRole("Admin - App") && !string.IsNullOrEmpty(loItemView.Note))
+                            {
+                                <div><span class="ussNoteLabel">Note: </span><span class="ussNote">@loItemView.Note</span></div>
+                            }
+                            @if (loItemView.DiscountAmount > 0)
+                            {
+                                <div><span class="ussDiscountReason">@loItemView.DiscountReason</span></div>
+                            }
+                        </div>
+                        <div class="visible-xs"><span class="ussItemPriceLabel">Price:</span><span class="ussItemPrice">@string.Format("{0:C}", loItemView.ItemPrice)</span></div>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3 hidden-xs text-right"><span class="ussItemPrice">@string.Format("{0:C}", loItemView.ItemPrice)</span></div>
+                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-3 text-center">
+                        @loItemView.Quantity
+                    </div>
+                    @if (lbHasItemDiscount)
+                    {
+                        <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right"><span class="ussItemTotal">@string.Format("{0:C}", loItemView.DiscountAmount)</span></div>
+                    }
+                    <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs text-right"><span class="ussItemTotal">@string.Format("{0:C}", loItemView.ItemTotal)</span></div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <hr class="ussItemDivider" />
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-3">
+            <img class="ussItemImage" src="//s.dns9.co/ct/MaxCart/CartImage.gif" alt="Shipping">
+        </div>
+        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-5">
+            <div class="ussName">Shipping</div>
+            <div class="ussDescription">
+                <ul class="list-unstyled">
+                    <li>
+                        @Model.ShippingTypeEntity.Name
+                        @if (!string.IsNullOrEmpty(Model.ShippingTypeEntity.Description))
+                        {
+                            <div>@Model.ShippingTypeEntity.Description</div>
+                        }
+                    </li>
+                </ul>
+            </div>
+        </div>
+        @if (Model.ShippingTotal > 0)
+        {
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right"><span class="ussItemTotal">@string.Format("{0:C}", Model.ShippingTotal)</span></div>
+        }
+    </div>
+    @if (null != Model.DiscountTotal)
+    {
+        <div class="row">
+            <hr class="ussItemDivider" />
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 text-right">Subtotal</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right">@Model.SubTotal</div>
+        </div>
+        <div class="row">
+            <hr class="ussItemDivider" />
+            <div class="col-lg-2 col-md-2 col-sm-2 hidden-xs">
+                &nbsp;
+            </div>
+            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                <div class="ussName">Discount</div>
+                <div class="ussDescription">
+                    @{
+        var laList = Model.DiscountTotalExplanation.Split('\n');
+                    }
+                    <ul>
+                        @foreach (string lsItem in laList)
+                        {
+                            if (!string.IsNullOrEmpty(lsItem.Trim()))
+                            {
+                                <li>@lsItem</li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right"><span class="ussItemTotal">@Model.DiscountTotal</span></div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ManualDiscount))
+    {
+        <div class="row">
+            <hr class="ussItemDivider" />
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 text-right">Manual Credit</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right">@string.Format("{0:C}", MaxFactry.Core.MaxConvertLibrary.ConvertToDouble(typeof(object), Model.ManualDiscount))</div>
+        </div>
+    }
+
+    @if (Model.TaxableAmount > 0)
+    {
+        <div class="row">
+            <hr class="ussItemDivider" />
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 text-right">Taxable Amount</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right">@string.Format("{0:C}", Model.TaxableAmount)</div>
+        </div>
+    }
+    @if (Model.TaxTotal > 0)
+    {
+        <div class="row">
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 text-right">Tax</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right">@string.Format("{0:C}", Model.TaxTotal)</div>
+        </div>
+    }
+
+    <div class="row">
+        <hr class="ussItemDivider" />
+        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 text-right">Total</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 text-right">@string.Format("{0:C}", Model.Total)</div>
+    </div>
+</div>
