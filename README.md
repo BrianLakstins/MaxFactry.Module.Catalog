@@ -1,0 +1,2 @@
+# MaxFactry.Module.Catalog
+ 
