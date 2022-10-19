@@ -12,6 +12,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.Module.Catalog.Mvc4-NF-4.5.2", "MaxFactry.Module.Catalog.Mvc4-NF-4.5.2\MaxFactry.Module.Catalog.Mvc4-NF-4.5.2.csproj", "{69BABF80-F6D2-46E3-9FFF-B412155CCBE5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{5E8C8C71-FD42-4E0F-979D-CA89A68D5210}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\MaxFactry.Module.Catalog.Mvc4.nuspec = .nuget\MaxFactry.Module.Catalog.Mvc4.nuspec
+		.nuget\MaxFactry.Module.Catalog.nuspec = .nuget\MaxFactry.Module.Catalog.nuspec
+		.nuget\package.bat = .nuget\package.bat
+		.nuget\readme.md = .nuget\readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
