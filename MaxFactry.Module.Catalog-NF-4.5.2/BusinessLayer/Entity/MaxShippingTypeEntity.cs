@@ -203,100 +203,41 @@ namespace MaxFactry.Module.Catalog.BusinessLayer
             return false;
         }
 
-        public override MaxEntityList LoadAll()
+        public override MaxEntityList LoadAll(params string[] laFields)
         {
             MaxEntityList loR = MaxEntityList.Create(typeof(MaxShippingTypeEntity));
-            if (MaxClientRepository.IsTractorToolsDirect(this.Data))
-            {
-                MaxShippingTypeEntity loShippingType6 = MaxShippingTypeEntity.Create();
-                loShippingType6.ShippingType = ShippingTypeFree;
-                loShippingType6.Name = "Standard Delivery (Free)";
-                loShippingType6.ShippingCalculation = "FREE";
-                loShippingType6.IsSelectable = true;
-                loR.Add(loShippingType6);
-                MaxShippingTypeEntity loShippingType1 = MaxShippingTypeEntity.Create();
-                loShippingType1.ShippingType = ShippingTypePickup;
-                loShippingType1.Name = "Pick Up (Free)";
-                loShippingType1.ShippingCalculation = "FREE";
-                loShippingType1.IsSelectable = true;
-                loR.Add(loShippingType1);
-                MaxShippingTypeEntity loShippingType2 = MaxShippingTypeEntity.Create();
-                loShippingType2.ShippingType = ShippingTypeCommercial;
-                loShippingType2.Name = "Commercial location (has dock or forklift, no residence on site)";
-                loShippingType2.ShippingCalculation = "0";
-                loShippingType2.IsSelectable = true;
-                loR.Add(loShippingType2);
-                /*
-                MaxShippingTypeEntity loShippingType3 = MaxShippingTypeEntity.Create();
-                loShippingType3.ShippingType = 300;
-                loShippingType3.Name = "Residence or farm with dock or forklift";
-                loShippingType3.ShippingCalculation = "70";
-                loShippingType3.IsSelectable = true;
-                loR.Add(loShippingType3);
-                */
-                MaxShippingTypeEntity loShippingType4 = MaxShippingTypeEntity.Create();
-                loShippingType4.ShippingType = ShippingTypeResidence;
-                loShippingType4.Name = "Residence or farm with lift gate service";
-                loShippingType4.ShippingCalculation = "80";
-                loShippingType4.IsSelectable = true;
-                loR.Add(loShippingType4);
-                MaxShippingTypeEntity loShippingType5 = MaxShippingTypeEntity.Create();
-                loShippingType5.ShippingType = ShippingTypeArrange;
-                loShippingType5.Name = "Shipping Arrangement Required";
-                loShippingType5.Description = "Please complete order and then call 260-225-3429 to arrange shipping.";
-                loShippingType5.ShippingCalculation = "TBD";
-                loR.Add(loShippingType5);
-                MaxShippingTypeEntity loShippingType7 = MaxShippingTypeEntity.Create();
-                loShippingType7.ShippingType = ShippingTypeStandard;
-                loShippingType7.Name = "Shipping Standard";
-                loShippingType7.ShippingCalculation = "0";
-                loR.Add(loShippingType7);
-            }
-            else if (MaxClientRepository.IsDisplayConnection(this.Data))
-            {
-                MaxShippingTypeEntity loShippingType5 = MaxShippingTypeEntity.Create();
-                loShippingType5.ShippingType = ShippingTypeArrange;
-                loShippingType5.Name = "Shipping Arrangement Required";
-                loShippingType5.Description = "We will contact you to arrange shipping.";
-                loShippingType5.ShippingCalculation = "TBD";
-                loShippingType5.IsSelectable = true;
-                loR.Add(loShippingType5);
-            }
-            else
-            {
-                MaxShippingTypeEntity loShippingType1 = MaxShippingTypeEntity.Create();
-                loShippingType1.ShippingType = ShippingTypePickup;
-                loShippingType1.Name = "Pick Up (Free)";
-                loShippingType1.ShippingCalculation = "FREE";
-                loShippingType1.IsSelectable = true;
-                loR.Add(loShippingType1);
-                MaxShippingTypeEntity loShippingType6 = MaxShippingTypeEntity.Create();
-                loShippingType6.ShippingType = ShippingTypeFree;
-                loShippingType6.Name = "Free Shipping";
-                loShippingType6.ShippingCalculation = "Free";
-                loShippingType6.IsSelectable = true;
-                loR.Add(loShippingType6);
-                MaxShippingTypeEntity loShippingType5 = MaxShippingTypeEntity.Create();
-                loShippingType5.ShippingType = ShippingTypeArrange;
-                loShippingType5.Name = "Shipping Arrangement Required";
-                loShippingType5.Description = "We will contact you to arrange shipping.";
-                loShippingType5.ShippingCalculation = "TBD";
-                loShippingType5.IsSelectable = true;
-                loR.Add(loShippingType5);
-                MaxShippingTypeEntity loShippingType7 = MaxShippingTypeEntity.Create();
-                loShippingType7.ShippingType = ShippingTypeStandard;
-                loShippingType7.Name = "Shipping Standard";
-                loShippingType7.ShippingCalculation = "0";
-                loShippingType7.IsSelectable = true;
-                loR.Add(loShippingType7);
-                MaxShippingTypeEntity loShippingType8 = MaxShippingTypeEntity.Create();
-                loShippingType8.ShippingType = ShippingTypeSpecial;
-                loShippingType8.Name = "Special Shipping";
-                loShippingType8.ShippingCalculation = "Free";
-                loShippingType8.Description = "No shipping information is needed";
-                loShippingType8.IsSelectable = true;
-                loR.Add(loShippingType8);
-            }
+            MaxShippingTypeEntity loShippingType1 = MaxShippingTypeEntity.Create();
+            loShippingType1.ShippingType = ShippingTypePickup;
+            loShippingType1.Name = "Pick Up (Free)";
+            loShippingType1.ShippingCalculation = "FREE";
+            loShippingType1.IsSelectable = true;
+            loR.Add(loShippingType1);
+            MaxShippingTypeEntity loShippingType6 = MaxShippingTypeEntity.Create();
+            loShippingType6.ShippingType = ShippingTypeFree;
+            loShippingType6.Name = "Free Shipping";
+            loShippingType6.ShippingCalculation = "Free";
+            loShippingType6.IsSelectable = true;
+            loR.Add(loShippingType6);
+            MaxShippingTypeEntity loShippingType5 = MaxShippingTypeEntity.Create();
+            loShippingType5.ShippingType = ShippingTypeArrange;
+            loShippingType5.Name = "Shipping Arrangement Required";
+            loShippingType5.Description = "We will contact you to arrange shipping.";
+            loShippingType5.ShippingCalculation = "TBD";
+            loShippingType5.IsSelectable = true;
+            loR.Add(loShippingType5);
+            MaxShippingTypeEntity loShippingType7 = MaxShippingTypeEntity.Create();
+            loShippingType7.ShippingType = ShippingTypeStandard;
+            loShippingType7.Name = "Shipping Standard";
+            loShippingType7.ShippingCalculation = "0";
+            loShippingType7.IsSelectable = true;
+            loR.Add(loShippingType7);
+            MaxShippingTypeEntity loShippingType8 = MaxShippingTypeEntity.Create();
+            loShippingType8.ShippingType = ShippingTypeSpecial;
+            loShippingType8.Name = "Special Shipping";
+            loShippingType8.ShippingCalculation = "Free";
+            loShippingType8.Description = "No shipping information is needed";
+            loShippingType8.IsSelectable = true;
+            loR.Add(loShippingType8);
 
             return loR;
         }

@@ -600,94 +600,6 @@ namespace MaxFactry.Module.Catalog.BusinessLayer
                 loR.Add(loList[lnE] as MaxShippingTypeEntity);
             }
 
-            if (MaxClientRepository.IsTractorToolsDirect(this.Data))
-            {
-                List<string> loSkuList = new List<string>(new string[] { "te8wrtt", "te9wrtt", "ml300", "BV1250PF".ToLower(), "BV2000PF".ToLower() });
-                bool lbIsRestricted = false;
-                double lnShippingTotal = 0;
-                int lnShippingType = this.ShippingType;
-
-                foreach (MaxCartItemEntity loItem in this.ItemList)
-                {
-                    if (loSkuList.Contains(loItem.Sku.ToLower()))
-                    {
-                        lbIsRestricted = true;
-                    }
-                }
-
-                MaxShippingChargeEntity loShippingChargeEntity = MaxShippingChargeEntity.Create();
-                lnShippingTotal = loShippingChargeEntity.GetCartShipping(this, this.ShippingType);
-                double lnProductShipping = loShippingChargeEntity.GetProductShipping(this);
-                if (lnProductShipping >= 10000)
-                {
-                    //// Item in cart is over 10000, so shipping needs to be arranged.
-                    //// Limit to only arrange type
-                    foreach (MaxShippingTypeEntity loShippingType in loR)
-                    {
-                        if (loShippingType.ShippingType != MaxShippingTypeEntity.ShippingTypeArrange)
-                        {
-                            loShippingType.IsSelectable = false;
-                        }
-                    }
-
-                    this.ShippingType = MaxShippingTypeEntity.ShippingTypeArrange;
-                }
-                else if (lbIsRestricted)
-                {
-                    //// Limit to commercial and pickup if there are restricted items
-                    foreach (MaxShippingTypeEntity loShippingType in loR)
-                    {
-                        if (loShippingType.ShippingType != MaxShippingTypeEntity.ShippingTypePickup &&
-                            loShippingType.ShippingType != MaxShippingTypeEntity.ShippingTypeCommercial)
-                        {
-                            loShippingType.IsSelectable = false;
-                        }
-                    }
-
-                    if (this.ShippingType != MaxShippingTypeEntity.ShippingTypePickup &&
-                        this.ShippingType != MaxShippingTypeEntity.ShippingTypeCommercial)
-                    {
-                        this.ShippingType = 0;
-                    }
-                }
-                else if (lnProductShipping <= 0)
-                {
-                    //// Limit results to the only 2 that are free to be selectable
-                    foreach (MaxShippingTypeEntity loShippingType in loR)
-                    {
-                        if (loShippingType.ShippingType != MaxShippingTypeEntity.ShippingTypePickup &&
-                            loShippingType.ShippingType != MaxShippingTypeEntity.ShippingTypeFree)
-                        {
-                            loShippingType.IsSelectable = false;
-                        }
-                    }
-
-                    if (this.ShippingType != MaxShippingTypeEntity.ShippingTypeFree &&
-                        this.ShippingType != MaxShippingTypeEntity.ShippingTypePickup)
-                    {
-                        this.ShippingType = MaxShippingTypeEntity.ShippingTypeFree;
-                    }
-                }
-                else
-                {
-                    //// Remove free standard shipping
-                    foreach (MaxShippingTypeEntity loShippingType in loR)
-                    {
-                        if (loShippingType.ShippingType == MaxShippingTypeEntity.ShippingTypeFree)
-                        {
-                            loShippingType.IsSelectable = false;
-                        }
-                    }
-
-                    if (this.ShippingType == MaxShippingTypeEntity.ShippingTypeArrange ||
-                        this.ShippingType == MaxShippingTypeEntity.ShippingTypeFree)
-                    {
-                        //// Shipping is greater than zero and was either Arrange or Free, so reset the shipping so it has to be selected.
-                        this.ShippingType = 0;
-                    }
-                }
-            }
-
             return loR;
         }
 
@@ -904,31 +816,6 @@ namespace MaxFactry.Module.Catalog.BusinessLayer
                     }
                 }
 
-                //// Tractor Tools Direct (TTD)
-                if (MaxClientRepository.IsTractorToolsDirect(this.Data))
-                {
-                    if (lnProductShipping >= 10000)
-                    {
-                        //// Item in cart is over 10000, so shipping needs to be arranged.
-                        lnShippingTotal = 0;
-                        lnShippingType = MaxShippingTypeEntity.ShippingTypeArrange;
-                    }
-                    else if (lnProductShipping > 0 &&
-                        (this.ShippingType == MaxShippingTypeEntity.ShippingTypeArrange ||
-                        this.ShippingType == MaxShippingTypeEntity.ShippingTypeFree))
-                    {
-                        //// Shipping is greater than zero and was either Arrange or Free, so reset the shipping so it has to be selected.
-                        lnShippingType = 0;
-                    }
-                }
-
-                //// Display Connection
-                if (MaxClientRepository.IsDisplayConnection(this.Data))
-                {
-                    lnShippingTotal = 0;
-                    lnShippingType = MaxShippingTypeEntity.ShippingTypeArrange;
-                }
-
                 if (lnShippingTotal != this.ShippingTotal || lnShippingType != this.ShippingType)
                 {
                     this.ShippingTotal = lnShippingTotal;
@@ -1092,13 +979,6 @@ namespace MaxFactry.Module.Catalog.BusinessLayer
                     lnTaxableAmount -= this.ManualDiscount;
                 }
 
-                //// Display Connection
-                if (MaxClientRepository.IsDisplayConnection(this.Data))
-                {
-                    //// Shipping is also included in tax
-                    lnTaxableAmount += this.ShippingTotal;
-                }
-
                 this.TaxableAmount = lnTaxableAmount;
                 double lnTax = Convert.ToDouble(Math.Round(Convert.ToDecimal(lnTaxableAmount) * Convert.ToDecimal(lnTaxRate), 2, MidpointRounding.AwayFromZero));
 
@@ -1193,10 +1073,6 @@ namespace MaxFactry.Module.Catalog.BusinessLayer
             if (this.ItemList.Count <= 0)
             {
                 lsR = "There are no items in the cart.";
-            }
-            else if (MaxClientRepository.IsDisplayConnection(this.GetData()) && this.ItemTotal < 50)
-            {
-                lsR = "Total of all items must exceed $50 to place an order.";
             }
 
             if (lsR.Length == 0)

@@ -903,10 +903,10 @@ namespace MaxFactry.Module.Catalog.BusinessLayer
             return false;
         }
 
-        public override MaxEntityList LoadAllCache()
+        public override MaxEntityList LoadAllCache(params string[] laFields)
         {
             MaxLogLibrary.Log(MaxEnumGroup.LogInfo, "Start MaxOrderEntity.LoadAllCache");
-            MaxEntityList loR = base.LoadAllCache();
+            MaxEntityList loR = base.LoadAllCache(laFields);
             MaxLogLibrary.Log(MaxEnumGroup.LogInfo, "End MaxOrderEntity.LoadAllCache");
             return loR;
         }
@@ -949,19 +949,6 @@ namespace MaxFactry.Module.Catalog.BusinessLayer
                 }
 
                 this.ProcessingStatus = ProcessingStatusConfirmed;
-                if (MaxClientRepository.IsTractorToolsDirect(this.Data))
-                {
-                    //// Set status to pending when full payment amount has not yet been collected at checkout.
-                    if (string.Format("{0:C}", lnPaymentCollected) != string.Format("{0:C}", this.Total))
-                    {
-                        if (lnPaymentCollected < this.Total)
-                        {
-                            this.LogMessage("Payment amount collected for this order is " + string.Format("{0:C}", lnPaymentCollected) + " of " + string.Format("{0:C}", this.Total), this.Username);
-                            this.ProcessingStatus = ProcessingStatusPending;
-                        }
-                    }
-                }
-
                 if (this.Update())
                 {
                     //// Update Inventory if a payment was made before confirmation

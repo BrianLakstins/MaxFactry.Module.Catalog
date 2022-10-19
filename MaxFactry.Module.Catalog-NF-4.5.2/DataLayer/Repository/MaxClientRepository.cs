@@ -43,14 +43,6 @@ namespace MaxFactry.Module.Catalog.DataLayer
     /// </summary>
     public class MaxClientRepository : MaxFactry.Base.DataLayer.MaxBaseIdRepository
     {
-        public static bool IsDisplayConnection(MaxData loData)
-        {
-            return MaxFactry.Module.App.DataLayer.MaxAppRepository.IsDisplayConnection(loData);
-        }
 
-        public static bool IsTractorToolsDirect(MaxData loData)
-        {
-            return MaxFactry.Module.App.DataLayer.MaxAppRepository.IsTractorToolsDirect(loData);
-        }
     }
 }

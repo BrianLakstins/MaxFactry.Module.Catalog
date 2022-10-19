@@ -74,7 +74,7 @@ namespace MaxFactry.Module.Catalog.DataLayer
             loDataQuery.AddFilter(loDataModel.ReferenceType, "=", lsType);
             loDataQuery.EndGroup();
             int lnTotal = 0;
-            MaxDataList loDataList = Select(loDataFilter, loDataQuery, 0, 0, out lnTotal);
+            MaxDataList loDataList = Select(loDataFilter, loDataQuery, 0, 0, string.Empty, out lnTotal);
             return loDataList;
         }
 
@@ -109,7 +109,7 @@ namespace MaxFactry.Module.Catalog.DataLayer
 
             loDataQuery.EndGroup();
             int lnTotal = 0;
-            MaxDataList loDataList = Select(loDataFilter, loDataQuery, 0, 0, out lnTotal);
+            MaxDataList loDataList = Select(loDataFilter, loDataQuery, 0, 0, string.Empty, out lnTotal);
             return loDataList;
         }
 
@@ -142,7 +142,7 @@ namespace MaxFactry.Module.Catalog.DataLayer
             loDataQuery.AddFilter(loDataModel.IsDeleted, "=", false);
 
             int lnTotal = 0;
-            MaxDataList loDataList = Select(loDataFilter, loDataQuery, 0, 0, out lnTotal);
+            MaxDataList loDataList = Select(loDataFilter, loDataQuery, 0, 0, string.Empty, out lnTotal);
             return loDataList;
         }
 
@@ -218,7 +218,7 @@ namespace MaxFactry.Module.Catalog.DataLayer
             loDataQuery.AddFilter(loDataModel.OrderPlacedDate, "<", ldEnd);
             loDataQuery.EndGroup();
             int lnTotal = 0;
-            MaxDataList loDataList = Select(loDataFilter, loDataQuery, 0, 0, out lnTotal, laFields);
+            MaxDataList loDataList = Select(loDataFilter, loDataQuery, 0, 0, string.Empty, out lnTotal, laFields);
             return loDataList;
         }
 
@@ -248,7 +248,7 @@ namespace MaxFactry.Module.Catalog.DataLayer
             loDataQuery.AddFilter(loDataModel.ExternalOrderId, "=", lsExternalOrderId);
             loDataQuery.EndGroup();
             int lnTotal = 0;
-            MaxDataList loDataList = Select(loDataFilter, loDataQuery, 0, 0, out lnTotal, laFields);
+            MaxDataList loDataList = Select(loDataFilter, loDataQuery, 0, 0, string.Empty, out lnTotal, laFields);
             return loDataList;
         }
     }

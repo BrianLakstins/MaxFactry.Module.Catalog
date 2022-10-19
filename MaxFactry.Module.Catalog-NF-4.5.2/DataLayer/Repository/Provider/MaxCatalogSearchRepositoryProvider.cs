@@ -68,7 +68,7 @@ namespace MaxFactry.Module.Catalog.DataLayer.Provider
             
             int lnTotal = 0;
 
-            MaxDataList loDataList = this.Select(loData, loDataQuery, 1, lnMaxCount, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, 1, lnMaxCount, string.Empty, out lnTotal);
             return loDataList;
         }
 
@@ -99,7 +99,7 @@ namespace MaxFactry.Module.Catalog.DataLayer.Provider
             loDataQuery.EndGroup();
             int lnTotal = 0;
 
-            MaxDataList loDataList = this.Select(loData, loDataQuery, 1, lnMaxCount, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, 1, lnMaxCount, string.Empty, out lnTotal);
             return loDataList;
         }
 
@@ -124,7 +124,7 @@ namespace MaxFactry.Module.Catalog.DataLayer.Provider
             loDataQuery.AddFilter(loDataModel.PrimaryCategoryId, "=", loCategoryId);
             loDataQuery.EndGroup();
             int lnTotal = 0;
-            MaxDataList loDataList = this.Select(loData, loDataQuery, 0, 0, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, 0, 0, string.Empty, out lnTotal);
             return loDataList;
         }
     }
